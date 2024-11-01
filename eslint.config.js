@@ -4,9 +4,8 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
     eslint.configs.recommended,
     ...tseslint.configs.strictTypeChecked,
-    ...tseslint.configs.stylisticTypeChecked,
     {
-        files: ['**/*.ts', '**/*.tsx'],
+        files: ['src/**/*.{ts,tsx}'],
         languageOptions: {
             parserOptions: {
                 projectService: true,
@@ -15,6 +14,16 @@ export default tseslint.config(
         },
     },
     {
+        rules: {
+            '@typescript-eslint/no-unused-vars': ['error', {
+                'argsIgnorePattern': '^_',
+                'varsIgnorePattern': '^_',
+                'caughtErrorsIgnorePattern': '^_'
+            }],
+        },
+    },
+    {
+
         ignores: ['node_modules/**', 'dist/**', "*.config.{js,ts}"],
-    }
+    },
 );
