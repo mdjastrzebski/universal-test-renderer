@@ -2,15 +2,21 @@
   "name": "universal-test-renderer",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && tsc --project tsconfig.json",
+    "dev": "tsup --watch"
+  },
   "devDependencies": {
+    "tsup": "^8.3.5",
     "typescript": "^5.6.3"
   }
 }
