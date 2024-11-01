@@ -2,7 +2,7 @@ import { act, createElement, ReactElement } from "react";
 import { expect, test } from "@jest/globals";
 import { createRenderer, RendererOptions } from "../renderer";
 
-let originalConsoleError = console.error;
+const originalConsoleError = console.error;
 
 beforeAll(() => {
   console.error = jest.fn();
@@ -70,7 +70,7 @@ test("render with single allowed text component", () => {
 `);
 
   expect(() =>
-    act(() => renderer.render(<div>Hello!</div>))
+    { act(() => { renderer.render(<div>Hello!</div>); }); }
   ).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <Text> component. Detected attempt to render "Hello!" string within a <div> component."`
   );
@@ -96,7 +96,7 @@ test("render with two allowed text components", () => {
 `);
 
   expect(() =>
-    renderer.render(createElement("X", null, "Hello!"))
+    { renderer.render(createElement("X", null, "Hello!")); }
   ).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <A> or <B> component. Detected attempt to render "Hello!" string within a <X> component."`
   );
@@ -113,7 +113,7 @@ test("render with multiple allowed text components", () => {
   );
 
   expect(() =>
-    renderer.render(createElement("X", null, "Hello!"))
+    { renderer.render(createElement("X", null, "Hello!")); }
   ).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <A>, <B>, or <C> component. Detected attempt to render "Hello!" string within a <X> component."`
   );
