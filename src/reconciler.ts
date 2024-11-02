@@ -11,6 +11,8 @@ export type Container = {
   tag: "CONTAINER";
   children: Array<Instance | TextInstance>;
   parent: null;
+
+  // Access to key options passed to createRenderer
   textComponents?: string[];
   createNodeMock: (element: ReactElement) => object;
 };
@@ -106,7 +108,6 @@ const hostConfig: ReactReconciler.HostConfig<
    * Depending on the mode, the reconciler will call different methods on your host config.
    * If you're not sure which one you want, you likely need the mutation mode.
    */
-  // TODO: Should we use supportsPersistence like RN renderer?
   supportsPersistence: false,
 
   /**

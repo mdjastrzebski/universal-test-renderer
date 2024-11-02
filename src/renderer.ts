@@ -1,8 +1,13 @@
 import { ReactElement } from "react";
 import { Container, TestReconciler } from "./reconciler";
-import { HostElement } from "./host-element";
+import { HostComponent } from "./host-component";
 import { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot, LegacyRoot } from "react-reconciler/constants";
+
+// Refs:
+// https://github.com/facebook/react/blob/v18.3.1/packages/react-noop-renderer/src/createReactNoop.js
+// https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactNativeHostConfig.js
+// https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactFabricHostConfig.js
 
 export type RendererOptions = {
   textComponents?: string[];
@@ -13,8 +18,8 @@ export type RendererOptions = {
 export type Renderer = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  container: HostElement;
-  root: HostElement | null;
+  container: HostComponent;
+  root: HostComponent | null;
 };
 
 export function createRenderer(options?: RendererOptions): Renderer {
@@ -34,7 +39,7 @@ export function createRenderer(options?: RendererOptions): Renderer {
     false, // isStrictMode
     null, // concurrentUpdatesByDefaultOverride
     "id", // identifierPrefix
-    (_error: unknown) => {}, // onRecoverableError
+    () => {}, // onRecoverableError
     null // transitionCallbacks
   );
 
@@ -56,7 +61,7 @@ export function createRenderer(options?: RendererOptions): Renderer {
   return {
     render,
     unmount,
-    get root(): HostElement | null {
+    get root(): HostComponent | null {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .root on unmounted test renderer");
       }
@@ -65,7 +70,7 @@ export function createRenderer(options?: RendererOptions): Renderer {
         return null;
       }
 
-      const root = HostElement.fromInstance(container.children[0]);
+      const root = HostComponent.fromInstance(container.children[0]);
       if (typeof root === "string") {
         throw new Error("Cannot render string as root element");
       }
@@ -73,12 +78,12 @@ export function createRenderer(options?: RendererOptions): Renderer {
       return root;
     },
 
-    get container(): HostElement {
+    get container(): HostComponent {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .container on unmounted test renderer");
       }
 
-      return HostElement.fromContainer(container);
+      return HostComponent.fromContainer(container);
     },
   };
 }
