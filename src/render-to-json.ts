@@ -1,9 +1,9 @@
 import { CONTAINER_TYPE } from "./constants";
 import { Container, Instance, TextInstance } from "./reconciler";
 
-export type JsonNode = JsonInstance | string;
+export type JsonNode = JsonElement | string;
 
-export type JsonInstance = {
+export type JsonElement = {
   type: string;
   props: object;
   children: Array<JsonNode> | null;
