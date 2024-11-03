@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { Container, TestReconciler } from "./reconciler";
-import { HostComponent } from "./host-component";
+import { HostElement } from "./host-element";
 import { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot, LegacyRoot } from "react-reconciler/constants";
 
@@ -18,8 +18,8 @@ export type RendererOptions = {
 export type Renderer = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  container: HostComponent;
-  root: HostComponent | null;
+  container: HostElement;
+  root: HostElement | null;
 };
 
 export function createRenderer(options?: RendererOptions): Renderer {
@@ -61,7 +61,7 @@ export function createRenderer(options?: RendererOptions): Renderer {
   return {
     render,
     unmount,
-    get root(): HostComponent | null {
+    get root(): HostElement | null {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .root on unmounted test renderer");
       }
@@ -70,7 +70,7 @@ export function createRenderer(options?: RendererOptions): Renderer {
         return null;
       }
 
-      const root = HostComponent.fromInstance(container.children[0]);
+      const root = HostElement.fromInstance(container.children[0]);
       if (typeof root === "string") {
         throw new Error("Cannot render string as root element");
       }
@@ -78,12 +78,12 @@ export function createRenderer(options?: RendererOptions): Renderer {
       return root;
     },
 
-    get container(): HostComponent {
+    get container(): HostElement {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .container on unmounted test renderer");
       }
 
-      return HostComponent.fromContainer(container);
+      return HostElement.fromContainer(container);
     },
   };
 }
