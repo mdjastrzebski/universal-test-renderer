@@ -16,6 +16,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "jest",
+    "test:ci": "jest --coverage",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:watch": "jest --watch",
