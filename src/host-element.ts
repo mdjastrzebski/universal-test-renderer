@@ -2,17 +2,17 @@ import { CONTAINER_TYPE } from "./constants";
 import { Container, Instance, TextInstance } from "./reconciler";
 import { JsonNode, renderToJson } from "./render-to-json";
 
+export type HostNode = HostElement | string;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Props = Record<string, any>;
+export type HostElementProps = Record<string, any>;
 
-export type HostNode = HostComponent | string;
-
-const instanceToHostComponentInstanceMap = new WeakMap<
+const instanceToHostElementMap = new WeakMap<
   Container | Instance,
-  HostComponent
+  HostElement
 >();
 
-export class HostComponent {
+export class HostElement {
   private instance: Instance | Container;
 
   private constructor(instance: Instance | Container) {
@@ -25,7 +25,7 @@ export class HostComponent {
       : CONTAINER_TYPE;
   }
 
-  get props(): Props {
+  get props(): HostElementProps {
     if (this.instance.tag === "CONTAINER") {
       return {};
     }
@@ -38,11 +38,11 @@ export class HostComponent {
   get children(): HostNode[] {
     const result = this.instance.children
       .filter((child) => !child.isHidden)
-      .map((child) => HostComponent.fromInstance(child));
+      .map((child) => HostElement.fromInstance(child));
     return result;
   }
 
-  get parent(): HostComponent | null {
+  get parent(): HostElement | null {
     const parentInstance = this.instance.parent;
     if (parentInstance == null) {
       return null;
@@ -50,10 +50,10 @@ export class HostComponent {
 
     switch (parentInstance.tag) {
       case "INSTANCE":
-        return HostComponent.fromInstance(parentInstance) as HostComponent;
+        return HostElement.fromInstance(parentInstance) as HostElement;
 
       case "CONTAINER":
-        return HostComponent.fromContainer(parentInstance);
+        return HostElement.fromContainer(parentInstance);
     }
   }
 
@@ -66,15 +66,14 @@ export class HostComponent {
   }
 
   /** @internal */
-  static fromContainer(container: Container): HostComponent {
-    const hostComponentInstance =
-      instanceToHostComponentInstanceMap.get(container);
-    if (hostComponentInstance) {
-      return hostComponentInstance;
+  static fromContainer(container: Container): HostElement {
+    const hostElement = instanceToHostElementMap.get(container);
+    if (hostElement) {
+      return hostElement;
     }
 
-    const result = new HostComponent(container);
-    instanceToHostComponentInstanceMap.set(container, result);
+    const result = new HostElement(container);
+    instanceToHostElementMap.set(container, result);
     return result;
   }
 
@@ -85,14 +84,13 @@ export class HostComponent {
         return instance.text;
 
       case "INSTANCE": {
-        const hostComponentInstance =
-          instanceToHostComponentInstanceMap.get(instance);
-        if (hostComponentInstance) {
-          return hostComponentInstance;
+        const hostElement = instanceToHostElementMap.get(instance);
+        if (hostElement) {
+          return hostElement;
         }
 
-        const result = new HostComponent(instance);
-        instanceToHostComponentInstanceMap.set(instance, result);
+        const result = new HostElement(instance);
+        instanceToHostElementMap.set(instance, result);
         return result;
       }
     }
