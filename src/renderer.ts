@@ -35,10 +35,13 @@ export function createRenderer(options?: RendererOptions): Renderer {
   let containerFiber: FiberRoot = TestReconciler.createContainer(
     container,
     options?.isConcurrent ? ConcurrentRoot : LegacyRoot,
-    null, // no hydration callback
+    null, // hydration callbacks
     false, // isStrictMode
     null, // concurrentUpdatesByDefaultOverride
     "id", // identifierPrefix
+    () => {}, // onUncaughtError
+    () => {}, // onCaughtError
+    // @ts-expect-error missing types
     () => {}, // onRecoverableError
     null // transitionCallbacks
   );

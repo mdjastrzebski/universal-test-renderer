@@ -3,6 +3,9 @@ import ReactReconciler, { Fiber } from "react-reconciler";
 import { DefaultEventPriority } from "react-reconciler/constants";
 import { formatComponentList } from "./utils";
 
+// Taken from NoEventPriority in react-reconciler/constants.js
+const NoEventPriority: number = 0;
+
 export type Type = string;
 export type Props = Record<string, unknown>;
 export type OpaqueHandle = Fiber;
@@ -46,10 +49,13 @@ export type NoTimeout = unknown;
 type HostContext = {
   type: string;
   isInsideText: boolean;
+  textComponents?: string[];
 };
 
 const UPDATE_SIGNAL = {};
 const nodeToInstanceMap = new WeakMap<object, Instance>();
+
+let currentUpdatePriority: number = NoEventPriority;
 
 // if (__DEV__) {
 //   Object.freeze(UPDATE_SIGNAL);
@@ -251,8 +257,12 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't intend to use host context, you can return `null`.
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
-  getRootHostContext(_rootContainer: Container): HostContext | null {
-    return { type: "ROOT", isInsideText: false };
+  getRootHostContext(rootContainer: Container): HostContext | null {
+    return {
+      type: "ROOT",
+      isInsideText: false,
+      textComponents: rootContainer.textComponents,
+    };
   },
 
   /**
@@ -269,13 +279,11 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
-  getChildHostContext(
-    parentHostContext: HostContext,
-    type: Type,
-    rootContainer: Container
-  ): HostContext {
-    const isInsideText = Boolean(rootContainer.textComponents?.includes(type));
-    return { type: type, isInsideText };
+  getChildHostContext(parentHostContext: HostContext, type: Type): HostContext {
+    const isInsideText = Boolean(
+      parentHostContext.textComponents?.includes(type)
+    );
+    return { ...parentHostContext, type: type, isInsideText };
   },
 
   /**
@@ -408,9 +416,10 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * You can consult the `getCurrentEventPriority()` implementation in `ReactDOMHostConfig.js` for a reference implementation.
    */
-  getCurrentEventPriority() {
-    return DefaultEventPriority;
-  },
+  // Removed in React 19
+  // getCurrentEventPriority() {
+  //   return DefaultEventPriority;
+  // },
 
   getInstanceFromNode(node: object): OpaqueHandle | null | undefined {
     const instance = nodeToInstanceMap.get(node);
@@ -437,9 +446,7 @@ const hostConfig: ReactReconciler.HostConfig<
     return nodeToInstanceMap.get(scopeInstance) ?? null;
   },
 
-  detachDeletedInstance(_node: Instance): void {
-    // noop
-  },
+  detachDeletedInstance(_node: Instance): void {},
 
   /**
    * This method should mutate the `parentInstance` and add the child to its list of children. For example,
@@ -613,6 +620,60 @@ const hostConfig: ReactReconciler.HostConfig<
   // File an issue if you need help.
   // -------------------
   supportsHydration: false,
+
+  // React 19
+  // @ts-expect-error missing types
+  setCurrentUpdatePriority(newPriority: number) {
+    currentUpdatePriority = newPriority;
+  },
+
+  getCurrentUpdatePriority() {
+    return currentUpdatePriority;
+  },
+
+  resolveUpdatePriority(): number {
+    return currentUpdatePriority || DefaultEventPriority;
+  },
+
+  shouldAttemptEagerTransition() {
+    return false;
+  },
+
+  // #### `maySuspendCommit(type, props)`
+  // This method is called during render to determine if the Host Component type and props require
+  // some kind of loading process to complete before committing an update.
+  maySuspendCommit(): boolean {
+    return false;
+  },
+
+  // #### `preloadInstance(type, props)`
+  // This method may be called during render if the Host Component type and props might suspend a commit.
+  // It can be used to initiate any work that might shorten the duration of a suspended commit.
+  preloadInstance() {
+    return true;
+  },
+
+  // #### `startSuspendingCommit()`
+  // This method is called just before the commit phase. Use it to set up any necessary state while any Host
+  // Components that might suspend this commit are evaluated to determine if the commit must be suspended.
+  startSuspendingCommit() {},
+
+  // #### `suspendInstance(type, props)`
+  // This method is called after `startSuspendingCommit` for each Host Component that indicated it might
+  // suspend a commit.
+  suspendInstance() {},
+
+  // #### `waitForCommitToBeReady()`
+  // This method is called after all `suspendInstance` calls are complete.
+  waitForCommitToBeReady() {
+    return null;
+  },
+
+  NotPendingTransition: null,
+
+  resetFormInstance() {},
+
+  requestPostPaintCallback() {},
 };
 
 export const TestReconciler = ReactReconciler(hostConfig);
