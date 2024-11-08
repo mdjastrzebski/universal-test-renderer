@@ -57,6 +57,7 @@ type HostContext = {
 
 const nodeToInstanceMap = new WeakMap<object, Instance>();
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 let currentUpdatePriority: number = NoEventPriority;
 
 const hostConfig: ReactReconciler.HostConfig<
