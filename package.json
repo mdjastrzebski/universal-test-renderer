@@ -22,7 +22,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "react-native.js",
+    "react-native.d.ts"
   ],
   "scripts": {
     "build": "tsup",

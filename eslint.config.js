@@ -24,6 +24,6 @@ export default tseslint.config(
     },
     {
 
-        ignores: ['node_modules/**', 'dist/**', "*.config.{js,ts}"],
+        ignores: ['node_modules/**', 'dist/**', "*.config.{js,ts}", "react-native.js", "react-native.d.ts"],
     },
 );
