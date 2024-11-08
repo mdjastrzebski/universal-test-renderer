@@ -27,8 +27,10 @@ export function createRenderer(options?: RendererOptions): Renderer {
     tag: "CONTAINER",
     children: [],
     parent: null,
-    textComponents: options?.textComponents,
-    createNodeMock: options?.createNodeMock ?? (() => ({})),
+    config: {
+      textComponents: options?.textComponents,
+      createNodeMock: options?.createNodeMock ?? (() => ({})),
+    },
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
