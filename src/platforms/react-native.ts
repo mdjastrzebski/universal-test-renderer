@@ -6,13 +6,10 @@ export type ReactNativeRootOptions = {
   createNodeMock: (element: ReactElement) => object;
 };
 
-const createReactNativeRoot = ({
-  legacyRoot,
-  createNodeMock,
-}: ReactNativeRootOptions): Root => {
+const createReactNativeRoot = (options?: ReactNativeRootOptions): Root => {
   return createRoot({
-    legacyRoot,
-    createNodeMock,
+    legacyRoot: options?.legacyRoot,
+    createNodeMock: options?.createNodeMock,
     textComponents: ["Text", "RCTText"],
   });
 };
