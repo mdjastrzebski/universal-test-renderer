@@ -27,18 +27,23 @@ export function createRenderer(options?: RendererOptions): Renderer {
     tag: "CONTAINER",
     children: [],
     parent: null,
-    textComponents: options?.textComponents,
-    createNodeMock: options?.createNodeMock ?? (() => ({})),
+    config: {
+      textComponents: options?.textComponents,
+      createNodeMock: options?.createNodeMock ?? (() => ({})),
+    },
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   let containerFiber: FiberRoot = TestReconciler.createContainer(
     container,
     options?.isConcurrent ? ConcurrentRoot : LegacyRoot,
-    null, // no hydration callback
+    null, // hydration callbacks
     false, // isStrictMode
     null, // concurrentUpdatesByDefaultOverride
     "id", // identifierPrefix
+    () => {}, // onUncaughtError
+    () => {}, // onCaughtError
+    // @ts-expect-error missing types
     () => {}, // onRecoverableError
     null // transitionCallbacks
   );

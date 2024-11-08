@@ -69,9 +69,11 @@ test("render with single allowed text component", () => {
 </div>
 `);
 
-  expect(() =>
-    { act(() => { renderer.render(<div>Hello!</div>); }); }
-  ).toThrowErrorMatchingInlineSnapshot(
+  expect(() => {
+    act(() => {
+      renderer.render(<div>Hello!</div>);
+    });
+  }).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <Text> component. Detected attempt to render "Hello!" string within a <div> component."`
   );
 });
@@ -95,9 +97,11 @@ test("render with two allowed text components", () => {
 </div>
 `);
 
-  expect(() =>
-    { renderer.render(createElement("X", null, "Hello!")); }
-  ).toThrowErrorMatchingInlineSnapshot(
+  expect(() => {
+    act(() => {
+      renderer.render(createElement("X", null, "Hello!"));
+    });
+  }).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <A> or <B> component. Detected attempt to render "Hello!" string within a <X> component."`
   );
 });
@@ -112,9 +116,11 @@ test("render with multiple allowed text components", () => {
     { textComponents: ["A", "B", "C"] }
   );
 
-  expect(() =>
-    { renderer.render(createElement("X", null, "Hello!")); }
-  ).toThrowErrorMatchingInlineSnapshot(
+  expect(() => {
+    act(() => {
+      renderer.render(createElement("X", null, "Hello!"));
+    });
+  }).toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <A>, <B>, or <C> component. Detected attempt to render "Hello!" string within a <X> component."`
   );
 });
