@@ -9,20 +9,20 @@ import { ConcurrentRoot, LegacyRoot } from "react-reconciler/constants";
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactNativeHostConfig.js
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactFabricHostConfig.js
 
-export type RendererOptions = {
+export type RootOptions = {
   textComponents?: string[];
   isConcurrent?: boolean;
   createNodeMock?: (element: ReactElement) => object;
 };
 
-export type Renderer = {
+export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
   container: HostElement;
   root: HostElement | null;
 };
 
-export function createRenderer(options?: RendererOptions): Renderer {
+export function createRoot(options?: RootOptions): Root {
   let container: Container | null = {
     tag: "CONTAINER",
     children: [],

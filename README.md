@@ -24,10 +24,10 @@ Note: this package is now compatible with React 18.3. In the near future I will 
 
 ```tsx
 import { act } from "react";
-import { createRenderer } from "universal-test-renderer";
+import { createRoot } from "universal-test-renderer";
 
 test("basic renderer usage", () => {
-  const renderer = createRenderer();
+  const renderer = createRoot();
   act(() => {
     renderer.render(<div>Hello!</div>);
   });

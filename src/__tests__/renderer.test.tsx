@@ -1,6 +1,6 @@
 import { act, createElement, ReactElement } from "react";
 import { expect, test } from "@jest/globals";
-import { createRenderer, RendererOptions } from "../renderer";
+import { createRoot, RootOptions } from "../renderer";
 
 const originalConsoleError = console.error;
 
@@ -12,8 +12,8 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-function renderWithAct(element: ReactElement, options?: RendererOptions) {
-  const renderer = createRenderer(options);
+function renderWithAct(element: ReactElement, options?: RootOptions) {
+  const renderer = createRoot(options);
   act(() => {
     renderer.render(element);
   });
