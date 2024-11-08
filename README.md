@@ -40,6 +40,29 @@ test("basic renderer usage", () => {
 });
 ```
 
+## React Native support
+
+This packages includes a version of renderer configured to be compatible with React Native.
+
+```tsx
+import { act } from "react";
+import { Text } from "react-native";
+import { createRoot } from "universal-test-renderer/react-native";
+
+test("basic renderer usage", () => {
+  const renderer = createRoot();
+  act(() => {
+    renderer.render(<Text>Hello!</Text>);
+  });
+
+  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
+<Text>
+  Hello!
+</Text>
+`);
+});
+```
+
 ## Differences from React Test Renderer
 
 - This renderer operates on host components level, it does not expose composite components unlike React Test Renderer, which exposed both host components and composite components.

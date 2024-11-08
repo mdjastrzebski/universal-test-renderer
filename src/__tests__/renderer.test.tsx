@@ -29,8 +29,8 @@ test("basic renderer usage", () => {
 `);
 });
 
-test("renderer supports isConcurrent: true option", () => {
-  const renderer = renderWithAct(<div>Hello!</div>, { isConcurrent: true });
+test("renderer supports legacyRoot: true option", () => {
+  const renderer = renderWithAct(<div>Hello!</div>, { legacyRoot: true });
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
 <div>
   Hello!
@@ -38,8 +38,8 @@ test("renderer supports isConcurrent: true option", () => {
 `);
 });
 
-test("renderer supports isConcurrent: false  option", () => {
-  const renderer = renderWithAct(<div>Hello!</div>, { isConcurrent: false });
+test("renderer supports legacyRoot: false  option", () => {
+  const renderer = renderWithAct(<div>Hello!</div>, { legacyRoot: false });
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
 <div>
   Hello!
