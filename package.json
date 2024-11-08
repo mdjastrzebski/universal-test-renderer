@@ -21,8 +21,7 @@
     "typecheck": "tsc --noEmit",
     "test:watch": "jest --watch",
     "validate": "pnpm lint && pnpm typecheck && pnpm test",
-    "release": "release-it",
-    "release:19": "release-it --preRelease=react19"
+    "release": "release-it"
   },
   "dependencies": {
     "react-reconciler": "^0.31.0-rc-fb9a90fa48-20240614"
