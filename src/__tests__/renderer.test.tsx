@@ -29,24 +29,6 @@ test("basic renderer usage", () => {
 `);
 });
 
-test("renderer supports legacyRoot: true option", () => {
-  const renderer = renderWithAct(<div>Hello!</div>, { legacyRoot: true });
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
-<div>
-  Hello!
-</div>
-`);
-});
-
-test("renderer supports legacyRoot: false  option", () => {
-  const renderer = renderWithAct(<div>Hello!</div>, { legacyRoot: false });
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
-<div>
-  Hello!
-</div>
-`);
-});
-
 test("render with single allowed text component", () => {
   let renderer = renderWithAct(createElement("Text", null, "Hello!"), {
     textComponents: ["Text"],

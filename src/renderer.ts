@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { Container, TestReconciler } from "./reconciler";
 import { HostElement } from "./host-element";
 import { FiberRoot } from "react-reconciler";
-import { ConcurrentRoot, LegacyRoot } from "react-reconciler/constants";
+import { ConcurrentRoot } from "react-reconciler/constants";
 
 // Refs:
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-noop-renderer/src/createReactNoop.js
@@ -10,7 +10,6 @@ import { ConcurrentRoot, LegacyRoot } from "react-reconciler/constants";
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactFabricHostConfig.js
 
 export type RootOptions = {
-  legacyRoot?: boolean;
   textComponents?: string[];
   createNodeMock?: (element: ReactElement) => object;
 };
@@ -36,7 +35,7 @@ export function createRoot(options?: RootOptions): Root {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   let containerFiber: FiberRoot = TestReconciler.createContainer(
     container,
-    options?.legacyRoot ? LegacyRoot : ConcurrentRoot,
+    ConcurrentRoot,
     null, // hydration callbacks
     false, // isStrictMode
     null, // concurrentUpdatesByDefaultOverride
