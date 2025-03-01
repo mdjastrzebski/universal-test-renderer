@@ -1,16 +1,12 @@
 # Universal Test Renderer for React
 
-## The problem
+A lightweight, JavaScript-only replacement for the deprecated React Test Renderer.
 
-Many React renderers require additional setup in order to work properly. For example, React Native requires a native code to run setup, and React DOM requires a DOM environment. While it's feasible to run a React DOM in simulated JS DOM environment, it is not possible for React Native.
+## Why Use It?
 
-Traditionally, in such case developers used React Test Renderer, but it has been deprecated with React 18.3.1, in it will be removed in the future.
-
-## The solution
-
-This is a universal test renderer that can be used to test React components in pure JavaScript environments like Jest or Vitest. It's build on top of React Reconciler and renders React components on host component level, exposing the resulting host component tree for various types of inspection: tree structure, props checking, etc.
-
-This renderer is created to be used as replacement for React Test Renderer.
+- **Pure JavaScript Testing** - Test React components in Jest or Vitest without browser/native dependencies
+- **React Native Compatible** - Works with React Native components without needing native code
+- **React 19 Ready** - Modern alternative as React Test Renderer is now deprecated
 
 ## Installation
 
@@ -18,53 +14,49 @@ This renderer is created to be used as replacement for React Test Renderer.
 npm install -D universal-test-renderer
 ```
 
-Note: this package is now compatible with React 18.3. In the near future I will add React 19 support, as well.
-
-## Usage
+## Basic Usage
 
 ```tsx
 import { act } from "react";
 import { createRoot } from "universal-test-renderer";
 
-test("basic renderer usage", () => {
+test("example", () => {
   const renderer = createRoot();
   act(() => {
     renderer.render(<div>Hello!</div>);
   });
 
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
-<div>
-  Hello!
-</div>
-`);
+    <div>
+      Hello!
+    </div>
+  `);
 });
 ```
 
-## React Native support
-
-This packages includes a version of renderer configured to be compatible with React Native.
+## React Native Usage
 
 ```tsx
 import { act } from "react";
 import { Text } from "react-native";
 import { createRoot } from "universal-test-renderer/react-native";
 
-test("basic renderer usage", () => {
+test("example", () => {
   const renderer = createRoot();
   act(() => {
     renderer.render(<Text>Hello!</Text>);
   });
 
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
-<Text>
-  Hello!
-</Text>
-`);
+    <Text>
+      Hello!
+    </Text>
+  `);
 });
 ```
 
-## Differences from React Test Renderer
+## Key Differences from React Test Renderer
 
-- This renderer operates on host components level, it does not expose composite components unlike React Test Renderer, which exposed both host components and composite components.
-- This renderer offers more flexible renderer setup, allowing for passing various options to the underlying React Reconciler, like concurrent mode, specifying allowed text components, etc.
-- This renderer does not re-export `act` function, you should use one provided by `react` package instead.
+- Works at host component level only (no composite components)
+- More flexible reconciler configuration options
+- Uses `act` from the React package directly
