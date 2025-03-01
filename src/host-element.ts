@@ -1,16 +1,14 @@
 import { CONTAINER_TYPE } from "./constants";
-import { Container, Instance, TextInstance } from "./reconciler";
-import { JsonNode, renderToJson } from "./render-to-json";
+import type { Container, Instance, TextInstance } from "./reconciler";
+import type { JsonNode} from "./render-to-json";
+import { renderToJson } from "./render-to-json";
 
 export type HostNode = HostElement | string;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceToHostElementMap = new WeakMap<
-  Container | Instance,
-  HostElement
->();
+const instanceToHostElementMap = new WeakMap<Container | Instance, HostElement>();
 
 export class HostElement {
   private instance: Instance | Container;
@@ -20,9 +18,7 @@ export class HostElement {
   }
 
   get type(): string {
-    return this.instance.tag === "INSTANCE"
-      ? this.instance.type
-      : CONTAINER_TYPE;
+    return this.instance.tag === "INSTANCE" ? this.instance.type : CONTAINER_TYPE;
   }
 
   get props(): HostElementProps {

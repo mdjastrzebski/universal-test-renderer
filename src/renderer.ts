@@ -1,8 +1,10 @@
-import { ReactElement } from "react";
-import { Container, TestReconciler } from "./reconciler";
-import { HostElement } from "./host-element";
-import { FiberRoot } from "react-reconciler";
+import type { ReactElement } from "react";
+import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
+
+import { HostElement } from "./host-element";
+import type { Container} from "./reconciler";
+import { TestReconciler } from "./reconciler";
 
 // Refs:
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-noop-renderer/src/createReactNoop.js
@@ -44,7 +46,7 @@ export function createRoot(options?: RootOptions): Root {
     () => {}, // onCaughtError
     // @ts-expect-error missing types
     () => {}, // onRecoverableError
-    null // transitionCallbacks
+    null, // transitionCallbacks
   );
 
   const render = (element: ReactElement) => {

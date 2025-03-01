@@ -33,9 +33,15 @@ importers:
       eslint:
         specifier: ^9.21.0
         version: 9.21.0
+      eslint-plugin-simple-import-sort:
+        specifier: ^12.1.1
+        version: 12.1.1(eslint@9.21.0)
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.8.6)
+      prettier:
+        specifier: ^3.5.2
+        version: 3.5.2
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1468,6 +1474,11 @@ packages:
     engines: {node: '>=6.0'}
     hasBin: true
 
+  eslint-plugin-simple-import-sort@12.1.1:
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
+    peerDependencies:
+      eslint: '>=5.0.0'
+
   eslint-scope@8.2.0:
     resolution: {integrity: sha512-PHlWUfG6lvPc3yvP5A4PNyBL1W8fkDUccmI21JUu/+GKZBoH/W5u6usENXUrWFRsyoW5ACUjFGgAFQp5gUlb/A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -2480,6 +2491,11 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.5.2:
+    resolution: {integrity: sha512-lc6npv5PH7hVqozBR7lkBNOGXV9vMwROAPlumdBkX0wTbbzPu/U1hk5yL8p2pt4Xoc+2mkT8t/sow2YrV/M5qg==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
@@ -4544,6 +4560,10 @@ snapshots:
     optionalDependencies:
       source-map: 0.6.1
 
+  eslint-plugin-simple-import-sort@12.1.1(eslint@9.21.0):
+    dependencies:
+      eslint: 9.21.0
+
   eslint-scope@8.2.0:
     dependencies:
       esrecurse: 4.3.0
@@ -5735,6 +5755,8 @@ snapshots:
       lilconfig: 3.1.2
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.5.2: {}
 
   pretty-format@29.7.0:
     dependencies:
