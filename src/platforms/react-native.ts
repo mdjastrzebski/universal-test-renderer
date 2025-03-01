@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+
 import { createRoot, Root } from "../renderer";
 
 export type ReactNativeRootOptions = {

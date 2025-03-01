@@ -1,5 +1,6 @@
-import { act, createElement, ReactElement } from "react";
 import { expect, test } from "@jest/globals";
+import { act, createElement, ReactElement } from "react";
+
 import { createRoot, RootOptions } from "../renderer";
 
 const originalConsoleError = console.error;

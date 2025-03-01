@@ -5,6 +5,7 @@ import {
   // @ts-expect-error missing types
   NoEventPriority,
 } from "react-reconciler/constants";
+
 import { formatComponentList } from "./utils";
 
 export type Type = string;
