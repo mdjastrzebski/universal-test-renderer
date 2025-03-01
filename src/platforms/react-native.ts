@@ -1,6 +1,7 @@
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 
-import { createRoot, Root } from "../renderer";
+import type { Root } from "../renderer";
+import { createRoot } from "../renderer";
 
 export type ReactNativeRootOptions = {
   createNodeMock?: (element: ReactElement) => object;

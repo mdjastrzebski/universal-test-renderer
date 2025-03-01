@@ -1,6 +1,7 @@
 import { CONTAINER_TYPE } from "./constants";
-import { Container, Instance, TextInstance } from "./reconciler";
-import { JsonNode, renderToJson } from "./render-to-json";
+import type { Container, Instance, TextInstance } from "./reconciler";
+import type { JsonNode} from "./render-to-json";
+import { renderToJson } from "./render-to-json";
 
 export type HostNode = HostElement | string;
 

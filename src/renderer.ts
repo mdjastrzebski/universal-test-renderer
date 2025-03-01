@@ -1,9 +1,10 @@
-import { ReactElement } from "react";
-import { FiberRoot } from "react-reconciler";
+import type { ReactElement } from "react";
+import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
 import { HostElement } from "./host-element";
-import { Container, TestReconciler } from "./reconciler";
+import type { Container} from "./reconciler";
+import { TestReconciler } from "./reconciler";
 
 // Refs:
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-noop-renderer/src/createReactNoop.js

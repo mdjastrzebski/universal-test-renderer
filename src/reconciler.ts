@@ -1,5 +1,6 @@
-import { ReactElement } from "react";
-import ReactReconciler, { Fiber } from "react-reconciler";
+import type { ReactElement } from "react";
+import type { Fiber } from "react-reconciler";
+import ReactReconciler from "react-reconciler";
 import {
   DefaultEventPriority,
   // @ts-expect-error missing types

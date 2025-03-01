@@ -27,6 +27,9 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/consistent-type-imports": ["error", {
+        fixStyle: "separate-type-imports",
+      }],
       "simple-import-sort/imports": [
         "error",
         {

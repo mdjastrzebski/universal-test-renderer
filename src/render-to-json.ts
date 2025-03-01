@@ -1,5 +1,5 @@
 import { CONTAINER_TYPE } from "./constants";
-import { Container, Instance, TextInstance } from "./reconciler";
+import type { Container, Instance, TextInstance } from "./reconciler";
 
 export type JsonNode = JsonElement | string;
 
