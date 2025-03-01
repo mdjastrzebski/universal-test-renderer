@@ -43,7 +43,7 @@ test("render with single allowed text component", () => {
     <div>
       <hr />
     </div>,
-    { textComponents: ["Text"] }
+    { textComponents: ["Text"] },
   );
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
 <div>
@@ -56,7 +56,7 @@ test("render with single allowed text component", () => {
       renderer.render(<div>Hello!</div>);
     });
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Invariant Violation: Text strings must be rendered within a <Text> component. Detected attempt to render "Hello!" string within a <div> component."`
+    `"Invariant Violation: Text strings must be rendered within a <Text> component. Detected attempt to render "Hello!" string within a <div> component."`,
   );
 });
 
@@ -66,7 +66,7 @@ test("render with two allowed text components", () => {
       {createElement("A", null, "Hello!")}
       {createElement("B", null, "Hi!")}
     </div>,
-    { textComponents: ["A", "B"] }
+    { textComponents: ["A", "B"] },
   );
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
 <div>
@@ -84,7 +84,7 @@ test("render with two allowed text components", () => {
       renderer.render(createElement("X", null, "Hello!"));
     });
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Invariant Violation: Text strings must be rendered within a <A> or <B> component. Detected attempt to render "Hello!" string within a <X> component."`
+    `"Invariant Violation: Text strings must be rendered within a <A> or <B> component. Detected attempt to render "Hello!" string within a <X> component."`,
   );
 });
 
@@ -95,7 +95,7 @@ test("render with multiple allowed text components", () => {
       {createElement("B", null, "Hi!")}
       {createElement("C", null, "Hola!")}
     </div>,
-    { textComponents: ["A", "B", "C"] }
+    { textComponents: ["A", "B", "C"] },
   );
 
   expect(() => {
@@ -103,6 +103,6 @@ test("render with multiple allowed text components", () => {
       renderer.render(createElement("X", null, "Hello!"));
     });
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Invariant Violation: Text strings must be rendered within a <A>, <B>, or <C> component. Detected attempt to render "Hello!" string within a <X> component."`
+    `"Invariant Violation: Text strings must be rendered within a <A>, <B>, or <C> component. Detected attempt to render "Hello!" string within a <X> component."`,
   );
 });

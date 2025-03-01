@@ -44,7 +44,7 @@ export function createRoot(options?: RootOptions): Root {
     () => {}, // onCaughtError
     // @ts-expect-error missing types
     () => {}, // onRecoverableError
-    null // transitionCallbacks
+    null, // transitionCallbacks
   );
 
   const render = (element: ReactElement) => {

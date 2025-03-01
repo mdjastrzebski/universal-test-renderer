@@ -142,7 +142,7 @@ const hostConfig: ReactReconciler.HostConfig<
     props: Props,
     rootContainer: Container,
     _hostContext: HostContext,
-    internalHandle: OpaqueHandle
+    internalHandle: OpaqueHandle,
   ) {
     return {
       tag: "INSTANCE",
@@ -166,15 +166,15 @@ const hostConfig: ReactReconciler.HostConfig<
     text: string,
     rootContainer: Container,
     hostContext: HostContext,
-    _internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle,
   ): TextInstance {
     if (rootContainer.config.textComponents && !hostContext.isInsideText) {
       throw new Error(
         `Invariant Violation: Text strings must be rendered within a ${formatComponentList(
-          rootContainer.config.textComponents
+          rootContainer.config.textComponents,
         )} component. Detected attempt to render "${text}" string within a <${
           hostContext.type
-        }> component.`
+        }> component.`,
       );
     }
 
@@ -219,7 +219,7 @@ const hostConfig: ReactReconciler.HostConfig<
     _type: Type,
     _props: Props,
     _rootContainer: Container,
-    _hostContext: HostContext
+    _hostContext: HostContext,
   ): boolean {
     return false;
   },
@@ -293,9 +293,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getChildHostContext(parentHostContext: HostContext, type: Type): HostContext {
-    const isInsideText = Boolean(
-      parentHostContext.config.textComponents?.includes(type)
-    );
+    const isInsideText = Boolean(parentHostContext.config.textComponents?.includes(type));
     return { ...parentHostContext, type: type, isInsideText };
   },
 
@@ -522,11 +520,7 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * Here, `textInstance` is a node created by `createTextInstance`.
    */
-  commitTextUpdate(
-    textInstance: TextInstance,
-    _oldText: string,
-    newText: string
-  ): void {
+  commitTextUpdate(textInstance: TextInstance, _oldText: string, newText: string): void {
     textInstance.text = newText;
   },
 
@@ -553,7 +547,7 @@ const hostConfig: ReactReconciler.HostConfig<
     _instance: Instance,
     _type: Type,
     _props: Props,
-    _internalHandle: OpaqueHandle
+    _internalHandle: OpaqueHandle,
   ): void {
     // noop
   },
@@ -577,7 +571,7 @@ const hostConfig: ReactReconciler.HostConfig<
     type: Type,
     _prevProps: Props,
     nextProps: Props,
-    internalHandle: OpaqueHandle
+    internalHandle: OpaqueHandle,
   ): void {
     instance.type = type;
     instance.props = nextProps;
@@ -713,10 +707,7 @@ export const TestReconciler = ReactReconciler(hostConfig);
  * in it. If you need to do some additional work when a node is definitely connected to the visible tree,
  * look at `commitMount`.
  */
-function appendChild(
-  parentInstance: Container | Instance,
-  child: Instance | TextInstance
-): void {
+function appendChild(parentInstance: Container | Instance, child: Instance | TextInstance): void {
   const index = parentInstance.children.indexOf(child);
   if (index !== -1) {
     parentInstance.children.splice(index, 1);
@@ -738,7 +729,7 @@ function appendChild(
 function insertBefore(
   parentInstance: Container | Instance,
   child: Instance | TextInstance,
-  beforeChild: Instance | TextInstance
+  beforeChild: Instance | TextInstance,
 ): void {
   const index = parentInstance.children.indexOf(child);
   if (index !== -1) {
@@ -756,10 +747,7 @@ function insertBefore(
  * React will only call it for the top-level node that is being removed. It is expected that garbage
  * collection would take care of the whole subtree. You are not expected to traverse the child tree in it.
  */
-function removeChild(
-  parentInstance: Container | Instance,
-  child: Instance | TextInstance
-): void {
+function removeChild(parentInstance: Container | Instance, child: Instance | TextInstance): void {
   const index = parentInstance.children.indexOf(child);
   parentInstance.children.splice(index, 1);
   child.parent = null;

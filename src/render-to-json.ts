@@ -10,9 +10,7 @@ export type JsonElement = {
   $$typeof: symbol;
 };
 
-export function renderToJson(
-  instance: Container | Instance | TextInstance
-): JsonNode | null {
+export function renderToJson(instance: Container | Instance | TextInstance): JsonNode | null {
   if (`isHidden` in instance && instance.isHidden) {
     // Omit timed out children from output entirely. This seems like the least
     // surprising behavior. We could perhaps add a separate API that includes
@@ -87,9 +85,7 @@ export function renderToJson(
   }
 }
 
-export function renderChildrenToJson(
-  children: Array<Instance | TextInstance> | null
-) {
+export function renderChildrenToJson(children: Array<Instance | TextInstance> | null) {
   let result = null;
   if (children?.length) {
     for (let i = 0; i < children.length; i++) {

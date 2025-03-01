@@ -7,10 +7,7 @@ export type HostNode = HostElement | string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceToHostElementMap = new WeakMap<
-  Container | Instance,
-  HostElement
->();
+const instanceToHostElementMap = new WeakMap<Container | Instance, HostElement>();
 
 export class HostElement {
   private instance: Instance | Container;
@@ -20,9 +17,7 @@ export class HostElement {
   }
 
   get type(): string {
-    return this.instance.tag === "INSTANCE"
-      ? this.instance.type
-      : CONTAINER_TYPE;
+    return this.instance.tag === "INSTANCE" ? this.instance.type : CONTAINER_TYPE;
   }
 
   get props(): HostElementProps {
