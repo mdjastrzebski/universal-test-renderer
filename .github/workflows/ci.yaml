@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup deps
-        uses: .github/actions/setup
+        uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build
