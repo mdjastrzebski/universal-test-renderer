@@ -11,6 +11,8 @@ jobs:
     name: Validate
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Setup deps
         uses: ./.github/actions/setup
 
