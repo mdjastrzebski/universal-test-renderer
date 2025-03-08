@@ -14,17 +14,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./react-native": {
-      "types": "./dist/react-native.d.ts",
-      "import": "./dist/react-native.js",
-      "require": "./dist/react-native.cjs"
     }
   },
   "files": [
-    "dist",
-    "react-native.js",
-    "react-native.d.ts"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
