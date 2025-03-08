@@ -4,9 +4,12 @@ A lightweight, JavaScript-only replacement for the deprecated React Test Rendere
 
 ## Why Use It?
 
-- **Pure JavaScript Testing** - Test React components in Jest or Vitest without browser/native dependencies
-- **React Native Compatible** - Works with React Native components without needing native code
+- **Pure JavaScript Testing** - Test React components in Jest or Vitest without browser or native dependencies
+- **Universal** - Can be used to simulate React Native or any other React renderer
 - **React 19 Ready** - Modern alternative as React Test Renderer is now deprecated
+- **Lightweight** - Minimal dependencies and small bundle size
+- **Type-safe** - Written in TypeScript with full type definitions
+- **Flexible Configuration** - Customizable reconciler options for different use cases
 
 ## Installation
 
@@ -34,29 +37,9 @@ test("example", () => {
 });
 ```
 
-## React Native Usage
-
-```tsx
-import { act } from "react";
-import { Text } from "react-native";
-import { createRoot } from "universal-test-renderer/react-native";
-
-test("example", () => {
-  const renderer = createRoot();
-  act(() => {
-    renderer.render(<Text>Hello!</Text>);
-  });
-
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
-    <Text>
-      Hello!
-    </Text>
-  `);
-});
-```
-
 ## Key Differences from React Test Renderer
 
 - Works at host component level only (no composite components)
 - More flexible reconciler configuration options
 - Uses `act` from the React package directly
+
