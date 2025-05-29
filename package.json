@@ -5,6 +5,11 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdjastrzebski/universal-test-renderer.git"
+  },
+  "homepage": "https://github.com/mdjastrzebski/universal-test-renderer",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
