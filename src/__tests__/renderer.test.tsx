@@ -1,9 +1,8 @@
 import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
-import type { ReactElement } from "react";
-import { act, createElement } from "react";
+import { createElement } from "react";
 
-import type { Root } from "../renderer";
 import { createRoot } from "../renderer";
+import { renderWithAct } from "../test-utils/render";
 
 const originalConsoleError = console.error;
 
@@ -15,17 +14,10 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-async function renderWithAct(root: Root, element: ReactElement) {
-  // eslint-disable-next-line @typescript-eslint/require-await -- intentionally triggering async act variant
-  await act(async () => {
-    root.render(element);
-  });
-}
-
 test("basic renderer usage", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.root.toJSON()).toMatchInlineSnapshot(`
     <div>
       Hello!
     </div>
@@ -37,7 +29,7 @@ test("render with single allowed text component", async () => {
     textComponents: ["Text"],
   });
   await renderWithAct(renderer, createElement("Text", null, "Hello!"));
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.root.toJSON()).toMatchInlineSnapshot(`
 <Text>
   Hello!
 </Text>
@@ -49,7 +41,7 @@ test("render with single allowed text component", async () => {
       <hr />
     </div>,
   );
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.root.toJSON()).toMatchInlineSnapshot(`
 <div>
   <hr />
 </div>

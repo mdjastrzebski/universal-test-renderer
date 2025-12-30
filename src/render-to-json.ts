@@ -10,10 +10,7 @@ export type JsonElement = {
 };
 
 export function renderToJson(instance: Instance | TextInstance): JsonNode | null {
-  if (`isHidden` in instance && instance.isHidden) {
-    // Omit timed out children from output entirely. This seems like the least
-    // surprising behavior. We could perhaps add a separate API that includes
-    // them, if it turns out people need it.
+  if (instance.isHidden) {
     return null;
   }
 

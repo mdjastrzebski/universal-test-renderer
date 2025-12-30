@@ -19,8 +19,7 @@ export type RootOptions = {
 export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  //container: HostElement;
-  root: HostElement | null;
+  root: HostElement;
 };
 
 export function createRoot(options?: RootOptions): Root {
@@ -67,13 +66,13 @@ export function createRoot(options?: RootOptions): Root {
   return {
     render,
     unmount,
-    get root(): HostElement | null {
+    get root(): HostElement {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .root on unmounted test renderer");
       }
 
       if (container.children.length === 0) {
-        return null;
+        throw new Error("Container has no children");
       }
 
       const firstChild = container.children[0];
@@ -83,13 +82,5 @@ export function createRoot(options?: RootOptions): Root {
 
       return HostElement.fromInstance(firstChild);
     },
-
-    // get container(): HostElement {
-    //   if (containerFiber == null || container == null) {
-    //     throw new Error("Can't access .container on unmounted test renderer");
-    //   }
-
-    //   return HostElement.fromContainer(container);
-    // },
   };
 }
