@@ -1,3 +1,5 @@
+import type { Fiber } from "react-reconciler";
+
 import type { Instance, TextInstance } from "./reconciler";
 import type { JsonNode} from "./render-to-json";
 import { renderToJson } from "./render-to-json";
@@ -40,6 +42,10 @@ export class HostElement {
     }
 
     return HostElement.fromInstance(parentInstance);
+  }
+
+  get unstable_fiber(): Fiber {
+    return this.instance.unstable_fiber;
   }
 
   get $$typeof(): symbol {

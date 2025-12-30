@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
 import type { ReactElement } from "react";
 import { act } from "react";
 
-import { findSingle } from "../find";
+import type { HostElement } from "../host-element";
 import type { Root } from "../renderer";
 import { createRoot } from "../renderer";
 
@@ -31,15 +32,25 @@ test("root parent is null", async() => {
   expect(renderer.root?.parent).toBeNull();
 });
 
-test("root child parent is root", async() => {
+test("basic parent/child relationships", async() => {
     const renderer = createRoot();
-    await renderWithAct(renderer, <div><div data-testid="inner">Hello!</div></div>);
-    const firstChild = renderer.root!.children[0];
-    expect(firstChild).toBeTruthy();
-    // @ts-expect-error -- we know firstChild is a HostElement
-    expect(firstChild.parent).toBe(renderer.root);
+    await renderWithAct(renderer, <div>
+        <div data-testid="item-1">Hello!</div>
+        <div data-testid="item-2">World!</div>
+    </div>);
 
-    const inner = findSingle(renderer.root!, (element) => element.props["data-testid"] === "inner");
-    expect(inner).toBe(firstChild);
+    const item1 = renderer.root!.children[0] as HostElement;
+    const item2 = renderer.root!.children[1] as HostElement;
+    expect(item1.props["data-testid"]).toBe("item-1");
+    expect(item2.props["data-testid"]).toBe("item-2");
+    expect(item1.parent).toBe(renderer.root);
+    expect(item2.parent).toBe(renderer.root);
+});
+
+test('host elements exposes fiber instance', async() => {
+    const renderer = createRoot();
+    await renderWithAct(renderer, <div>Hello!</div>);
+
+    expect(renderer.root!.unstable_fiber).toBeTruthy();
 });
 
