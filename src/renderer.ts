@@ -63,7 +63,7 @@ export function createRoot(options?: RootOptions): Root {
     container = null;
     containerFiber = null;
   };
-
+  
   return {
     render,
     unmount,
@@ -93,3 +93,4 @@ export function createRoot(options?: RootOptions): Root {
     // },
   };
 }
+
