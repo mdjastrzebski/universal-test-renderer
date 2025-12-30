@@ -2,7 +2,7 @@ import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
 import type { ReactElement } from "react";
 import { act, createElement } from "react";
 
-import type { Root, RootOptions } from "../renderer";
+import type { Root } from "../renderer";
 import { createRoot } from "../renderer";
 
 const originalConsoleError = console.error;
