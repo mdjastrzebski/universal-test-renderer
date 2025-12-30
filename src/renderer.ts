@@ -19,7 +19,7 @@ export type RootOptions = {
 export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  container: HostElement;
+  //container: HostElement;
   root: HostElement | null;
 };
 
@@ -84,12 +84,12 @@ export function createRoot(options?: RootOptions): Root {
       return root;
     },
 
-    get container(): HostElement {
-      if (containerFiber == null || container == null) {
-        throw new Error("Can't access .container on unmounted test renderer");
-      }
+    // get container(): HostElement {
+    //   if (containerFiber == null || container == null) {
+    //     throw new Error("Can't access .container on unmounted test renderer");
+    //   }
 
-      return HostElement.fromContainer(container);
-    },
+    //   return HostElement.fromContainer(container);
+    // },
   };
 }

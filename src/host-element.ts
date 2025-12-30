@@ -1,5 +1,4 @@
-import { CONTAINER_TYPE } from "./constants";
-import type { Container, Instance, TextInstance } from "./reconciler";
+import type { Instance, TextInstance } from "./reconciler";
 import type { JsonNode} from "./render-to-json";
 import { renderToJson } from "./render-to-json";
 
@@ -8,24 +7,20 @@ export type HostNode = HostElement | string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceToHostElementMap = new WeakMap<Container | Instance, HostElement>();
+const instanceToHostElementMap = new WeakMap<Instance, HostElement>();
 
 export class HostElement {
-  private instance: Instance | Container;
+  private instance: Instance;
 
-  private constructor(instance: Instance | Container) {
+  private constructor(instance: Instance) {
     this.instance = instance;
   }
 
   get type(): string {
-    return this.instance.tag === "INSTANCE" ? this.instance.type : CONTAINER_TYPE;
+    return this.instance.type;
   }
 
   get props(): HostElementProps {
-    if (this.instance.tag === "CONTAINER") {
-      return {};
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, ...restProps } = this.instance.props;
     return restProps;
@@ -49,7 +44,7 @@ export class HostElement {
         return HostElement.fromInstance(parentInstance) as HostElement;
 
       case "CONTAINER":
-        return HostElement.fromContainer(parentInstance);
+        return null;
     }
   }
 
@@ -59,18 +54,6 @@ export class HostElement {
 
   toJSON(): JsonNode | null {
     return renderToJson(this.instance);
-  }
-
-  /** @internal */
-  static fromContainer(container: Container): HostElement {
-    const hostElement = instanceToHostElementMap.get(container);
-    if (hostElement) {
-      return hostElement;
-    }
-
-    const result = new HostElement(container);
-    instanceToHostElementMap.set(container, result);
-    return result;
   }
 
   /** @internal */
@@ -92,3 +75,4 @@ export class HostElement {
     }
   }
 }
+
