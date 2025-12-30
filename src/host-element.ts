@@ -7,7 +7,7 @@ export type HostNode = HostElement | string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceToHostElementMap = new WeakMap<Instance, HostElement>();
+const instanceMap = new WeakMap<Instance, HostElement>();
 
 export class HostElement {
   private instance: Instance;
@@ -29,23 +29,17 @@ export class HostElement {
   get children(): HostNode[] {
     const result = this.instance.children
       .filter((child) => !child.isHidden)
-      .map((child) => HostElement.fromInstance(child));
+      .map((child) => getHostNodeForInstance(child));
     return result;
   }
 
   get parent(): HostElement | null {
     const parentInstance = this.instance.parent;
-    if (parentInstance == null) {
+    if (parentInstance == null || parentInstance.tag === "CONTAINER") {
       return null;
     }
 
-    switch (parentInstance.tag) {
-      case "INSTANCE":
-        return HostElement.fromInstance(parentInstance) as HostElement;
-
-      case "CONTAINER":
-        return null;
-    }
+    return HostElement.fromInstance(parentInstance);
   }
 
   get $$typeof(): symbol {
@@ -57,22 +51,24 @@ export class HostElement {
   }
 
   /** @internal */
-  static fromInstance(instance: Instance | TextInstance): HostNode {
-    switch (instance.tag) {
-      case "TEXT":
-        return instance.text;
-
-      case "INSTANCE": {
-        const hostElement = instanceToHostElementMap.get(instance);
-        if (hostElement) {
-          return hostElement;
-        }
-
-        const result = new HostElement(instance);
-        instanceToHostElementMap.set(instance, result);
-        return result;
-      }
+  static fromInstance(instance: Instance): HostElement {
+    const hostElement = instanceMap.get(instance);
+    if (hostElement) {
+      return hostElement;
     }
+
+    const result = new HostElement(instance);
+    instanceMap.set(instance, result);
+    return result;
   }
 }
 
+export function getHostNodeForInstance(instance: Instance | TextInstance): HostNode {
+  switch (instance.tag) {
+    case "TEXT":
+      return instance.text;
+
+    case "INSTANCE":
+      return HostElement.fromInstance(instance);
+  } 
+}

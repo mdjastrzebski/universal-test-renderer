@@ -76,12 +76,12 @@ export function createRoot(options?: RootOptions): Root {
         return null;
       }
 
-      const root = HostElement.fromInstance(container.children[0]);
-      if (typeof root === "string") {
-        throw new Error("Cannot render string as root element");
+      const firstChild = container.children[0];
+      if (firstChild.tag === "TEXT") {
+        throw new Error("Cannot render text as root element");
       }
 
-      return root;
+      return HostElement.fromInstance(firstChild);
     },
 
     // get container(): HostElement {
