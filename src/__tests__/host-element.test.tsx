@@ -4,6 +4,7 @@ import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
 import type { ReactElement } from "react";
 import { act } from "react";
 
+import { FIBER_TAG_HOST_COMPONENT, FIBER_TAG_ROOT } from "../constants";
 import type { HostElement } from "../host-element";
 import type { Root } from "../renderer";
 import { createRoot } from "../renderer";
@@ -51,6 +52,8 @@ test('host elements exposes fiber instance', async() => {
     const renderer = createRoot();
     await renderWithAct(renderer, <div>Hello!</div>);
 
-    expect(renderer.root!.unstable_fiber).toBeTruthy();
+    const fiber = renderer.root!.unstable_fiber;
+    expect(fiber.tag).toBe(FIBER_TAG_HOST_COMPONENT);
+    expect(fiber.return!.tag).toBe(FIBER_TAG_ROOT);
 });
 
