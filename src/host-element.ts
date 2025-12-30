@@ -1,6 +1,7 @@
-import { CONTAINER_TYPE } from "./constants";
-import type { Container, Instance, TextInstance } from "./reconciler";
-import type { JsonNode} from "./render-to-json";
+import type { Fiber } from "react-reconciler";
+
+import type { Instance, TextInstance } from "./reconciler";
+import type { JsonNode } from "./render-to-json";
 import { renderToJson } from "./render-to-json";
 
 export type HostNode = HostElement | string;
@@ -8,24 +9,20 @@ export type HostNode = HostElement | string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceToHostElementMap = new WeakMap<Container | Instance, HostElement>();
+const instanceMap = new WeakMap<Instance, HostElement>();
 
 export class HostElement {
-  private instance: Instance | Container;
+  private instance: Instance;
 
-  private constructor(instance: Instance | Container) {
+  private constructor(instance: Instance) {
     this.instance = instance;
   }
 
   get type(): string {
-    return this.instance.tag === "INSTANCE" ? this.instance.type : CONTAINER_TYPE;
+    return this.instance.type;
   }
 
   get props(): HostElementProps {
-    if (this.instance.tag === "CONTAINER") {
-      return {};
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, ...restProps } = this.instance.props;
     return restProps;
@@ -34,23 +31,21 @@ export class HostElement {
   get children(): HostNode[] {
     const result = this.instance.children
       .filter((child) => !child.isHidden)
-      .map((child) => HostElement.fromInstance(child));
+      .map((child) => getHostNodeForInstance(child));
     return result;
   }
 
   get parent(): HostElement | null {
     const parentInstance = this.instance.parent;
-    if (parentInstance == null) {
+    if (parentInstance == null || parentInstance.tag === "CONTAINER") {
       return null;
     }
 
-    switch (parentInstance.tag) {
-      case "INSTANCE":
-        return HostElement.fromInstance(parentInstance) as HostElement;
+    return HostElement.fromInstance(parentInstance);
+  }
 
-      case "CONTAINER":
-        return HostElement.fromContainer(parentInstance);
-    }
+  get unstable_fiber(): Fiber {
+    return this.instance.unstable_fiber;
   }
 
   get $$typeof(): symbol {
@@ -62,33 +57,24 @@ export class HostElement {
   }
 
   /** @internal */
-  static fromContainer(container: Container): HostElement {
-    const hostElement = instanceToHostElementMap.get(container);
+  static fromInstance(instance: Instance): HostElement {
+    const hostElement = instanceMap.get(instance);
     if (hostElement) {
       return hostElement;
     }
 
-    const result = new HostElement(container);
-    instanceToHostElementMap.set(container, result);
+    const result = new HostElement(instance);
+    instanceMap.set(instance, result);
     return result;
   }
+}
 
-  /** @internal */
-  static fromInstance(instance: Instance | TextInstance): HostNode {
-    switch (instance.tag) {
-      case "TEXT":
-        return instance.text;
+export function getHostNodeForInstance(instance: Instance | TextInstance): HostNode {
+  switch (instance.tag) {
+    case "TEXT":
+      return instance.text;
 
-      case "INSTANCE": {
-        const hostElement = instanceToHostElementMap.get(instance);
-        if (hostElement) {
-          return hostElement;
-        }
-
-        const result = new HostElement(instance);
-        instanceToHostElementMap.set(instance, result);
-        return result;
-      }
-    }
+    case "INSTANCE":
+      return HostElement.fromInstance(instance);
   }
 }

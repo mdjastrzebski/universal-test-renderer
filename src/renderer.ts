@@ -3,7 +3,7 @@ import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
 import { HostElement } from "./host-element";
-import type { Container} from "./reconciler";
+import type { Container } from "./reconciler";
 import { TestReconciler } from "./reconciler";
 
 // Refs:
@@ -19,8 +19,7 @@ export type RootOptions = {
 export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  container: HostElement;
-  root: HostElement | null;
+  root: HostElement;
 };
 
 export function createRoot(options?: RootOptions): Root {
@@ -67,29 +66,21 @@ export function createRoot(options?: RootOptions): Root {
   return {
     render,
     unmount,
-    get root(): HostElement | null {
+    get root(): HostElement {
       if (containerFiber == null || container == null) {
         throw new Error("Can't access .root on unmounted test renderer");
       }
 
       if (container.children.length === 0) {
-        return null;
+        throw new Error("Container has no children");
       }
 
-      const root = HostElement.fromInstance(container.children[0]);
-      if (typeof root === "string") {
-        throw new Error("Cannot render string as root element");
+      const firstChild = container.children[0];
+      if (firstChild.tag === "TEXT") {
+        throw new Error("Cannot render text as root element");
       }
 
-      return root;
-    },
-
-    get container(): HostElement {
-      if (containerFiber == null || container == null) {
-        throw new Error("Can't access .container on unmounted test renderer");
-      }
-
-      return HostElement.fromContainer(container);
+      return HostElement.fromInstance(firstChild);
     },
   };
 }

@@ -11,7 +11,6 @@ import { formatComponentList } from "./utils";
 
 export type Type = string;
 export type Props = Record<string, unknown>;
-export type OpaqueHandle = Fiber;
 
 type ReconcilerConfig = {
   textComponents?: string[];
@@ -33,7 +32,7 @@ export type Instance = {
   parent: Container | Instance | null;
   rootContainer: Container;
   isHidden: boolean;
-  internalHandle: OpaqueHandle;
+  unstable_fiber: Fiber;
 };
 
 export type TextInstance = {
@@ -144,7 +143,7 @@ const hostConfig: ReactReconciler.HostConfig<
     props: Props,
     rootContainer: Container,
     _hostContext: HostContext,
-    internalHandle: OpaqueHandle,
+    internalHandle: Fiber,
   ) {
     return {
       tag: "INSTANCE",
@@ -154,7 +153,7 @@ const hostConfig: ReactReconciler.HostConfig<
       children: [],
       parent: null,
       rootContainer,
-      internalHandle,
+      unstable_fiber: internalHandle,
     };
   },
 
@@ -168,7 +167,7 @@ const hostConfig: ReactReconciler.HostConfig<
     text: string,
     rootContainer: Container,
     hostContext: HostContext,
-    _internalHandle: OpaqueHandle,
+    _internalHandle: Fiber,
   ): TextInstance {
     if (rootContainer.config.textComponents && !hostContext.isInsideText) {
       throw new Error(
@@ -317,9 +316,7 @@ const hostConfig: ReactReconciler.HostConfig<
           key: null,
         });
 
-        //if (typeof mockNode === "object" && mockNode !== null) {
         nodeToInstanceMap.set(mockNode, instance);
-        //}
 
         return mockNode;
       }
@@ -416,10 +413,10 @@ const hostConfig: ReactReconciler.HostConfig<
    */
   warnsIfNotActing: true,
 
-  getInstanceFromNode(node: object): OpaqueHandle | null | undefined {
+  getInstanceFromNode(node: object): Fiber | null | undefined {
     const instance = nodeToInstanceMap.get(node);
     if (instance !== undefined) {
-      return instance.internalHandle;
+      return instance.unstable_fiber;
     }
 
     return null;
@@ -545,12 +542,7 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
    */
-  commitMount(
-    _instance: Instance,
-    _type: Type,
-    _props: Props,
-    _internalHandle: OpaqueHandle,
-  ): void {
+  commitMount(_instance: Instance, _type: Type, _props: Props, _internalHandle: Fiber): void {
     // noop
   },
 
@@ -573,11 +565,11 @@ const hostConfig: ReactReconciler.HostConfig<
     type: Type,
     _prevProps: Props,
     nextProps: Props,
-    internalHandle: OpaqueHandle,
+    internalHandle: Fiber,
   ): void {
     instance.type = type;
     instance.props = nextProps;
-    instance.internalHandle = internalHandle;
+    instance.unstable_fiber = internalHandle;
   },
 
   /**

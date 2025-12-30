@@ -27,9 +27,12 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "@typescript-eslint/consistent-type-imports": ["error", {
-        fixStyle: "separate-type-imports",
-      }],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          fixStyle: "separate-type-imports",
+        },
+      ],
       "simple-import-sort/imports": [
         "error",
         {
@@ -39,10 +42,12 @@ export default tseslint.config(
     },
   },
   {
-    ignores: [
-      "node_modules/**",
-      "dist/**",
-      "*.config.{js,ts}",
-    ],
+    files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
+  {
+    ignores: ["node_modules/**", "dist/**", "*.config.{js,ts}"],
   },
 );
