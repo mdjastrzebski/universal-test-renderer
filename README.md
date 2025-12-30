@@ -29,7 +29,7 @@ test("example", () => {
     renderer.render(<div>Hello!</div>);
   });
 
-  expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.root).toMatchInlineSnapshot(`
     <div>
       Hello!
     </div>

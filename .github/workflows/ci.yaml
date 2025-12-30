@@ -28,6 +28,9 @@ jobs:
       - name: Run tests
         run: bun run test:ci
 
+      - name: Run prettier
+        run: bun run prettier
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:

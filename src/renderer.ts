@@ -21,7 +21,7 @@ export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
 
-  root: HostElement;
+  root: HostElement | null;
   findAll: (
     predicate: (element: HostElement) => boolean,
     options?: FindAllOptions,
@@ -75,7 +75,7 @@ export function createRoot(options?: RootOptions): Root {
     }
 
     if (container.children.length === 0) {
-      throw new Error("Container has no children");
+      return null;
     }
 
     const firstChild = container.children[0];
@@ -89,11 +89,12 @@ export function createRoot(options?: RootOptions): Root {
   return {
     render,
     unmount,
-    get root(): HostElement {
+    get root(): HostElement | null {
       return getRoot();
     },
     findAll: (predicate: (element: HostElement) => boolean, options?: FindAllOptions) => {
-      return findAll(getRoot(), predicate, options);
+      const root = getRoot();
+      return root != null ? findAll(root, predicate, options) : [];
     },
   };
 }
