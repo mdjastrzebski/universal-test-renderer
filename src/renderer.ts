@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
+import { findAll, type FindAllOptions } from "./find-all";
 import { HostElement } from "./host-element";
 import type { Container } from "./reconciler";
 import { TestReconciler } from "./reconciler";
@@ -19,7 +20,12 @@ export type RootOptions = {
 export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-  root: HostElement;
+
+  root: HostElement | null;
+  findAll: (
+    predicate: (element: HostElement) => boolean,
+    options?: FindAllOptions,
+  ) => HostElement[];
 };
 
 export function createRoot(options?: RootOptions): Root {
@@ -63,24 +69,32 @@ export function createRoot(options?: RootOptions): Root {
     containerFiber = null;
   };
 
+  const getRoot = () => {
+    if (containerFiber == null || container == null) {
+      throw new Error("Can't access .root on unmounted test renderer");
+    }
+
+    if (container.children.length === 0) {
+      return null;
+    }
+
+    const firstChild = container.children[0];
+    if (firstChild.tag === "TEXT") {
+      throw new Error("Cannot render text as root element");
+    }
+
+    return HostElement.fromInstance(firstChild);
+  };
+
   return {
     render,
     unmount,
-    get root(): HostElement {
-      if (containerFiber == null || container == null) {
-        throw new Error("Can't access .root on unmounted test renderer");
-      }
-
-      if (container.children.length === 0) {
-        throw new Error("Container has no children");
-      }
-
-      const firstChild = container.children[0];
-      if (firstChild.tag === "TEXT") {
-        throw new Error("Cannot render text as root element");
-      }
-
-      return HostElement.fromInstance(firstChild);
+    get root(): HostElement | null {
+      return getRoot();
+    },
+    findAll: (predicate: (element: HostElement) => boolean, options?: FindAllOptions) => {
+      const root = getRoot();
+      return root != null ? findAll(root, predicate, options) : [];
     },
   };
 }
