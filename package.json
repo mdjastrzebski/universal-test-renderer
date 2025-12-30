@@ -32,7 +32,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:watch": "jest --watch",
-    "validate": "pnpm lint && pnpm typecheck && pnpm test",
+    "validate": "bun run lint && bun run typecheck && bun run test",
     "release": "release-it"
   },
   "dependencies": {
@@ -58,6 +58,5 @@
     "tsup": "^8.4.0",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.25.0"
-  },
-  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
+  }
 }

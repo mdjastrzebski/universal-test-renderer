@@ -17,16 +17,16 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build
-        run: pnpm build
+        run: bun run build
 
       - name: Run typecheck
-        run: pnpm typecheck
+        run: bun run typecheck
 
       - name: Run linter
-        run: pnpm lint
+        run: bun run lint
 
       - name: Run tests
-        run: pnpm test:ci
+        run: bun run test:ci
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
