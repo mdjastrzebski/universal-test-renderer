@@ -1,51 +1,51 @@
 import type { HostElement } from "./host-element";
 
 export interface FindAllOptions {
-    /* Exclude any ancestors of deepest matched elements even if they match the predicate */
-    matchDeepestOnly?: boolean;
-  }
-  
-  export function findAll(
-    root: HostElement,
-    predicate: (element: HostElement) => boolean,
-    options?: FindAllOptions,
-  ): HostElement[] {
-    const results: HostElement[] = [];
-  
-    // Match descendants first but do not add them to results yet.
-    const matchingDescendants: HostElement[] = [];
-    root.children.forEach((child) => {
-      if (typeof child === 'string') {
-        return;
-      }
-      matchingDescendants.push(...findAll(child, predicate, options));
-    });
-  
-    if (
-      // When matchDeepestOnly = true: add current element only if no descendants match
-      (!options?.matchDeepestOnly || matchingDescendants.length === 0) &&
-      predicate(root)
-    ) {
-      results.push(root);
+  /* Exclude any ancestors of deepest matched elements even if they match the predicate */
+  matchDeepestOnly?: boolean;
+}
+
+export function findAll(
+  root: HostElement,
+  predicate: (element: HostElement) => boolean,
+  options?: FindAllOptions,
+): HostElement[] {
+  const results: HostElement[] = [];
+
+  // Match descendants first but do not add them to results yet.
+  const matchingDescendants: HostElement[] = [];
+  root.children.forEach((child) => {
+    if (typeof child === "string") {
+      return;
     }
-  
-    // Add matching descendants after element to preserve original tree walk order.
-    results.push(...matchingDescendants);
-  
-    return results;
+    matchingDescendants.push(...findAll(child, predicate, options));
+  });
+
+  if (
+    // When matchDeepestOnly = true: add current element only if no descendants match
+    (!options?.matchDeepestOnly || matchingDescendants.length === 0) &&
+    predicate(root)
+  ) {
+    results.push(root);
   }
 
-  export function findSingle(
-    root: HostElement,
-    predicate: (element: HostElement) => boolean,
-  ): HostElement {
-    const results = findAll(root, predicate);
-    if (results.length > 1) {
-      throw new Error("Multiple elements found for predicate");
-    }
-    if (results.length === 0) {
-      throw new Error("No element found for predicate");
-    }
+  // Add matching descendants after element to preserve original tree walk order.
+  results.push(...matchingDescendants);
 
-    return results[0];
+  return results;
+}
+
+export function findSingle(
+  root: HostElement,
+  predicate: (element: HostElement) => boolean,
+): HostElement {
+  const results = findAll(root, predicate);
+  if (results.length > 1) {
+    throw new Error("Multiple elements found for predicate");
   }
+  if (results.length === 0) {
+    throw new Error("No element found for predicate");
+  }
+
+  return results[0];
+}

@@ -3,7 +3,7 @@ import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
 import { HostElement } from "./host-element";
-import type { Container} from "./reconciler";
+import type { Container } from "./reconciler";
 import { TestReconciler } from "./reconciler";
 
 // Refs:
@@ -63,7 +63,7 @@ export function createRoot(options?: RootOptions): Root {
     container = null;
     containerFiber = null;
   };
-  
+
   return {
     render,
     unmount,
@@ -93,4 +93,3 @@ export function createRoot(options?: RootOptions): Root {
     // },
   };
 }
-

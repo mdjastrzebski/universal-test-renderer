@@ -42,4 +42,3 @@ test("example", () => {
 - Works at host component level only (no composite components)
 - More flexible reconciler configuration options
 - Uses `act` from the React package directly
-

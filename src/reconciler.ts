@@ -542,12 +542,7 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
    */
-  commitMount(
-    _instance: Instance,
-    _type: Type,
-    _props: Props,
-    _internalHandle: Fiber,
-  ): void {
+  commitMount(_instance: Instance, _type: Type, _props: Props, _internalHandle: Fiber): void {
     // noop
   },
 

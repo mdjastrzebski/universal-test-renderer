@@ -22,7 +22,7 @@ async function renderWithAct(root: Root, element: ReactElement) {
   });
 }
 
-test("basic renderer usage", async() => {
+test("basic renderer usage", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
@@ -32,7 +32,7 @@ test("basic renderer usage", async() => {
   `);
 });
 
-test("render with single allowed text component", async() => {
+test("render with single allowed text component", async () => {
   const renderer = createRoot({
     textComponents: ["Text"],
   });
@@ -43,10 +43,11 @@ test("render with single allowed text component", async() => {
 </Text>
 `);
 
-  await renderWithAct(renderer,
+  await renderWithAct(
+    renderer,
     <div>
       <hr />
-    </div>
+    </div>,
   );
   expect(renderer.root?.toJSON()).toMatchInlineSnapshot(`
 <div>
@@ -55,7 +56,7 @@ test("render with single allowed text component", async() => {
 `);
 
   await expect(() =>
-    renderWithAct(renderer, <div>Hello!</div>)
+    renderWithAct(renderer, <div>Hello!</div>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <Text> component. Detected attempt to render "Hello!" string within a <div> component."`,
   );
@@ -65,16 +66,17 @@ test("render with multiple allowed text components", async () => {
   const renderer = createRoot({
     textComponents: ["A", "B", "C"],
   });
-  await renderWithAct(renderer,
+  await renderWithAct(
+    renderer,
     <div>
       {createElement("A", null, "Hello!")}
-      {createElement("B", null, "Hi!")} 
+      {createElement("B", null, "Hi!")}
       {createElement("C", null, "Hola!")}
-    </div>
+    </div>,
   );
 
-  await expect(() => 
-    renderWithAct(renderer, createElement("X", null, "Hello!"))
+  await expect(() =>
+    renderWithAct(renderer, createElement("X", null, "Hello!")),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"Invariant Violation: Text strings must be rendered within a <A>, <B>, or <C> component. Detected attempt to render "Hello!" string within a <X> component."`,
   );

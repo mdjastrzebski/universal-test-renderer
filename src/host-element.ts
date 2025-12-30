@@ -1,7 +1,7 @@
 import type { Fiber } from "react-reconciler";
 
 import type { Instance, TextInstance } from "./reconciler";
-import type { JsonNode} from "./render-to-json";
+import type { JsonNode } from "./render-to-json";
 import { renderToJson } from "./render-to-json";
 
 export type HostNode = HostElement | string;
@@ -76,5 +76,5 @@ export function getHostNodeForInstance(instance: Instance | TextInstance): HostN
 
     case "INSTANCE":
       return HostElement.fromInstance(instance);
-  } 
+  }
 }
