@@ -1,5 +1,6 @@
 import type { Fiber } from "react-reconciler";
 
+import { Tag } from "./constants";
 import type { Instance, TextInstance } from "./reconciler";
 import type { JsonNode } from "./render-to-json";
 import { renderToJson } from "./render-to-json";
@@ -23,9 +24,9 @@ export class HostElement {
   }
 
   get props(): HostElementProps {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { children, ...restProps } = this.instance.props;
-    return restProps;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- exclude children from props
+    const { children, ...props } = this.instance.props;
+    return props;
   }
 
   get children(): HostNode[] {
@@ -37,7 +38,7 @@ export class HostElement {
 
   get parent(): HostElement | null {
     const parentInstance = this.instance.parent;
-    if (parentInstance == null || parentInstance.tag === "CONTAINER") {
+    if (parentInstance == null || parentInstance.tag === Tag.Container) {
       return null;
     }
 
@@ -71,10 +72,10 @@ export class HostElement {
 
 export function getHostNodeForInstance(instance: Instance | TextInstance): HostNode {
   switch (instance.tag) {
-    case "TEXT":
+    case Tag.Text:
       return instance.text;
 
-    case "INSTANCE":
+    case Tag.Instance:
       return HostElement.fromInstance(instance);
   }
 }

@@ -1,18 +1,13 @@
-import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
+import { expect, jest, test } from "@jest/globals";
 
 import { FiberTag } from "../constants";
 import type { HostElement } from "../host-element";
 import { createRoot } from "../renderer";
 import { renderWithAct } from "../test-utils/render";
 
-const originalConsoleError = console.error;
-
-beforeAll(() => {
-  console.error = jest.fn();
-});
-
-afterAll(() => {
-  console.error = originalConsoleError;
+beforeEach(() => {
+  // @ts-expect-error global is not typed
+  global.IS_REACT_ACT_ENVIRONMENT = true;
 });
 
 test("root parent is null", async () => {

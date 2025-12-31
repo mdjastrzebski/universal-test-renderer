@@ -7,6 +7,7 @@ import {
   NoEventPriority,
 } from "react-reconciler/constants";
 
+import { Tag } from "./constants";
 import { formatComponentList } from "./utils";
 
 export type Type = string;
@@ -14,18 +15,19 @@ export type Props = Record<string, unknown>;
 
 type ReconcilerConfig = {
   textComponents?: string[];
+  containerType: string;
   createNodeMock: (element: ReactElement) => object;
 };
 
 export type Container = {
-  tag: "CONTAINER";
+  tag: typeof Tag.Container;
   children: Array<Instance | TextInstance>;
-  parent: null;
+  isHidden: false;
   config: ReconcilerConfig;
 };
 
 export type Instance = {
-  tag: "INSTANCE";
+  tag: typeof Tag.Instance;
   type: string;
   props: Props;
   children: Array<Instance | TextInstance>;
@@ -36,7 +38,7 @@ export type Instance = {
 };
 
 export type TextInstance = {
-  tag: "TEXT";
+  tag: typeof Tag.Text;
   text: string;
   parent: Container | Instance | null;
   isHidden: boolean;
@@ -146,7 +148,7 @@ const hostConfig: ReactReconciler.HostConfig<
     internalHandle: Fiber,
   ) {
     return {
-      tag: "INSTANCE",
+      tag: Tag.Instance,
       type,
       props,
       isHidden: false,
@@ -180,7 +182,7 @@ const hostConfig: ReactReconciler.HostConfig<
     }
 
     return {
-      tag: "TEXT",
+      tag: Tag.Text,
       text,
       parent: null,
       isHidden: false,
@@ -308,7 +310,7 @@ const hostConfig: ReactReconciler.HostConfig<
    */
   getPublicInstance(instance: Instance | TextInstance): PublicInstance {
     switch (instance.tag) {
-      case "INSTANCE": {
+      case Tag.Instance: {
         const createNodeMock = instance.rootContainer.config.createNodeMock;
         const mockNode = createNodeMock({
           type: instance.type,

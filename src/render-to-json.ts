@@ -1,4 +1,5 @@
-import type { Instance, TextInstance } from "./reconciler";
+import { Tag } from "./constants";
+import type { Container, Instance, TextInstance } from "./reconciler";
 
 export type JsonNode = JsonElement | string;
 
@@ -9,39 +10,39 @@ export type JsonElement = {
   $$typeof: symbol;
 };
 
-export function renderToJson(instance: Instance | TextInstance): JsonNode | null {
+export function renderToJson(instance: Container | Instance | TextInstance): JsonNode | null {
   if (instance.isHidden) {
     return null;
   }
 
   switch (instance.tag) {
-    case "TEXT":
+    case Tag.Text:
       return instance.text;
 
-    case "INSTANCE": {
+    case Tag.Instance: {
       // We don't include the `children` prop in JSON.
       // Instead, we will include the actual rendered children.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { children, ...props } = instance.props;
-
-      let renderedChildren = null;
-      if (instance.children.length) {
-        for (let i = 0; i < instance.children.length; i++) {
-          const renderedChild = renderToJson(instance.children[i]);
-          if (renderedChild !== null) {
-            if (renderedChildren === null) {
-              renderedChildren = [renderedChild];
-            } else {
-              renderedChildren.push(renderedChild);
-            }
-          }
-        }
-      }
+      const { children, ...restProps } = instance.props;
 
       const result = {
         type: instance.type,
-        props: props,
-        children: renderedChildren,
+        props: restProps,
+        children: renderChildrenToJson(instance.children),
+        $$typeof: Symbol.for("react.test.json"),
+      };
+      // This is needed for JEST to format snapshot as JSX.
+      Object.defineProperty(result, "$$typeof", {
+        value: Symbol.for("react.test.json"),
+      });
+      return result;
+    }
+
+    case Tag.Container: {
+      const result = {
+        type: instance.config.containerType,
+        props: {},
+        children: renderChildrenToJson(instance.children),
         $$typeof: Symbol.for("react.test.json"),
       };
       // This is needed for JEST to format snapshot as JSX.
@@ -53,18 +54,13 @@ export function renderToJson(instance: Instance | TextInstance): JsonNode | null
   }
 }
 
-export function renderChildrenToJson(children: Array<Instance | TextInstance> | null) {
-  let result = null;
-  if (children?.length) {
-    for (let i = 0; i < children.length; i++) {
-      const renderedChild = renderToJson(children[i]);
-      if (renderedChild !== null) {
-        if (result === null) {
-          result = [renderedChild];
-        } else {
-          result.push(renderedChild);
-        }
-      }
+export function renderChildrenToJson(children: Array<Instance | TextInstance>) {
+  const result = [];
+
+  for (let i = 0; i < children.length; i++) {
+    const renderedChild = renderToJson(children[i]);
+    if (renderedChild !== null) {
+      result.push(renderedChild);
     }
   }
 

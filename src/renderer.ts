@@ -2,6 +2,8 @@ import type { ReactElement } from "react";
 import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
+import { Tag } from "./constants";
+import { ContainerElement } from "./container-element";
 import { findAll, type FindAllOptions } from "./find-all";
 import { HostElement } from "./host-element";
 import type { Container } from "./reconciler";
@@ -12,8 +14,12 @@ import { TestReconciler } from "./reconciler";
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactNativeHostConfig.js
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-native-renderer/src/ReactFabricHostConfig.js
 
+const DEFAULT_CONTAINER_TYPE = "Container";
+const DEFAULT_CREATE_MOCK_NODE = () => ({});
+
 export type RootOptions = {
   textComponents?: string[];
+  containerType?: string;
   createNodeMock?: (element: ReactElement) => object;
 };
 
@@ -21,6 +27,7 @@ export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
 
+  container: ContainerElement;
   root: HostElement | null;
   findAll: (
     predicate: (element: HostElement) => boolean,
@@ -30,12 +37,13 @@ export type Root = {
 
 export function createRoot(options?: RootOptions): Root {
   let container: Container | null = {
-    tag: "CONTAINER",
+    tag: Tag.Container,
     children: [],
-    parent: null,
+    isHidden: false,
     config: {
       textComponents: options?.textComponents,
-      createNodeMock: options?.createNodeMock ?? (() => ({})),
+      containerType: options?.containerType ?? DEFAULT_CONTAINER_TYPE,
+      createNodeMock: options?.createNodeMock ?? DEFAULT_CREATE_MOCK_NODE,
     },
   };
 
@@ -59,42 +67,48 @@ export function createRoot(options?: RootOptions): Root {
   };
 
   const unmount = () => {
-    if (containerFiber == null || container == null) {
+    if (container == null) {
       return;
     }
 
     TestReconciler.updateContainer(null, containerFiber, null, null);
 
-    container = null;
     containerFiber = null;
+    container = null;
   };
 
-  const getRoot = () => {
-    if (containerFiber == null || container == null) {
-      throw new Error("Can't access .root on unmounted test renderer");
+  const getContainer = () => {
+    if (container == null) {
+      throw new Error("Can't access .container on unmounted test renderer");
     }
 
-    if (container.children.length === 0) {
-      return null;
-    }
-
-    const firstChild = container.children[0];
-    if (firstChild.tag === "TEXT") {
-      throw new Error("Cannot render text as root element");
-    }
-
-    return HostElement.fromInstance(firstChild);
+    return ContainerElement.fromContainer(container);
   };
 
   return {
     render,
     unmount,
+    get container(): ContainerElement {
+      return getContainer();
+    },
     get root(): HostElement | null {
-      return getRoot();
+      if (container == null) {
+        throw new Error("Can't access .root on unmounted test renderer");
+      }
+
+      if (container.children.length === 0) {
+        return null;
+      }
+
+      const firstChild = container.children[0];
+      if (firstChild.tag === Tag.Text) {
+        throw new Error("Cannot render text as root element");
+      }
+
+      return HostElement.fromInstance(firstChild);
     },
     findAll: (predicate: (element: HostElement) => boolean, options?: FindAllOptions) => {
-      const root = getRoot();
-      return root != null ? findAll(root, predicate, options) : [];
+      return findAll(getContainer(), predicate, options);
     },
   };
 }
