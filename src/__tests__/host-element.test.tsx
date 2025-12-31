@@ -35,11 +35,6 @@ test("basic parent/child relationships", async () => {
   expect(item2.parent).toBe(renderer.root);
 });
 
-interface TestComponentProps {
-  className?: string;
-  onChange?: (value: string) => void;
-}
-
 test("host elements exposes fiber instance", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
@@ -49,6 +44,11 @@ test("host elements exposes fiber instance", async () => {
   expect(fiber.return!.tag).toBe(FiberTag.Root);
 });
 
+interface TestComponentProps {
+  className?: string;
+  onChange?: (value: string) => void;
+}
+
 function TestComponent(props: TestComponentProps) {
   return <div className={props.className}>Hello!</div>;
 }
@@ -57,7 +57,7 @@ test("can access composite parent props", async () => {
   const handleChange = jest.fn();
   const renderer = createRoot();
   await renderWithAct(renderer, <TestComponent className="test-class" onChange={handleChange} />);
-  expect(renderer.root!.props).toEqual({ className: "test-class" });
+  expect(renderer.root!.props).toEqual({ className: "test-class", children: "Hello!" });
 
   const fiber = renderer.root!.unstable_fiber;
   expect(fiber.return!.tag).toBe(FiberTag.FunctionComponent);

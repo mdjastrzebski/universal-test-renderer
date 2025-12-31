@@ -24,9 +24,7 @@ export class HostElement {
   }
 
   get props(): HostElementProps {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- exclude children from props
-    const { children, ...props } = this.instance.props;
-    return props;
+    return this.instance.props;
   }
 
   get children(): HostNode[] {
@@ -47,10 +45,6 @@ export class HostElement {
 
   get unstable_fiber(): Fiber {
     return this.instance.unstable_fiber;
-  }
-
-  get $$typeof(): symbol {
-    return Symbol.for("react.test.json");
   }
 
   toJSON(): JsonNode | null {
