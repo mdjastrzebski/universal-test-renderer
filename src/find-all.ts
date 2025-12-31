@@ -1,3 +1,4 @@
+import type { ContainerElement } from "./container-element";
 import type { HostElement } from "./host-element";
 
 export interface FindAllOptions {
@@ -6,16 +7,17 @@ export interface FindAllOptions {
 }
 
 export function findAll(
-  root: HostElement,
+  element: ContainerElement | HostElement,
   predicate: (element: HostElement) => boolean,
   options?: FindAllOptions,
 ): HostElement[] {
+  const matchDeepestOnly = options?.matchDeepestOnly ?? false;
   const results: HostElement[] = [];
 
   // Match descendants first but do not add them to results yet.
   const matchingDescendants: HostElement[] = [];
 
-  root.children.forEach((child) => {
+  element.children.forEach((child) => {
     if (typeof child === "string") {
       return;
     }
@@ -23,12 +25,14 @@ export function findAll(
     matchingDescendants.push(...findAll(child, predicate, options));
   });
 
+  const isHostElement = "props" in element;
   if (
+    isHostElement &&
     // When matchDeepestOnly = true: add current element only if no descendants match
-    (!options?.matchDeepestOnly || matchingDescendants.length === 0) &&
-    predicate(root)
+    (matchingDescendants.length === 0 || !matchDeepestOnly) &&
+    predicate(element)
   ) {
-    results.push(root);
+    results.push(element);
   }
 
   // Add matching descendants after element to preserve original tree walk order.

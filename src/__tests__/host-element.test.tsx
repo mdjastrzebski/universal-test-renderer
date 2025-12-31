@@ -1,18 +1,13 @@
-import { afterAll, beforeAll, expect, jest, test } from "@jest/globals";
+import { expect, jest, test } from "@jest/globals";
 
 import { FiberTag } from "../constants";
 import type { HostElement } from "../host-element";
 import { createRoot } from "../renderer";
 import { renderWithAct } from "../test-utils/render";
 
-const originalConsoleError = console.error;
-
-beforeAll(() => {
-  console.error = jest.fn();
-});
-
-afterAll(() => {
-  console.error = originalConsoleError;
+beforeEach(() => {
+  // @ts-expect-error global is not typed
+  global.IS_REACT_ACT_ENVIRONMENT = true;
 });
 
 test("root parent is null", async () => {
@@ -40,11 +35,6 @@ test("basic parent/child relationships", async () => {
   expect(item2.parent).toBe(renderer.root);
 });
 
-interface TestComponentProps {
-  className?: string;
-  onChange?: (value: string) => void;
-}
-
 test("host elements exposes fiber instance", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
@@ -54,6 +44,11 @@ test("host elements exposes fiber instance", async () => {
   expect(fiber.return!.tag).toBe(FiberTag.Root);
 });
 
+interface TestComponentProps {
+  className?: string;
+  onChange?: (value: string) => void;
+}
+
 function TestComponent(props: TestComponentProps) {
   return <div className={props.className}>Hello!</div>;
 }
@@ -62,7 +57,7 @@ test("can access composite parent props", async () => {
   const handleChange = jest.fn();
   const renderer = createRoot();
   await renderWithAct(renderer, <TestComponent className="test-class" onChange={handleChange} />);
-  expect(renderer.root!.props).toEqual({ className: "test-class" });
+  expect(renderer.root!.props).toEqual({ className: "test-class", children: "Hello!" });
 
   const fiber = renderer.root!.unstable_fiber;
   expect(fiber.return!.tag).toBe(FiberTag.FunctionComponent);
