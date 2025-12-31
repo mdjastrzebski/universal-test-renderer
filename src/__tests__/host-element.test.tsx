@@ -10,11 +10,13 @@ beforeEach(() => {
   global.IS_REACT_ACT_ENVIRONMENT = true;
 });
 
-test("root parent is null", async () => {
+test("container is root's parent", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
+
   expect(renderer.root).toBeTruthy();
-  expect(renderer.root!.parent).toBeNull();
+  expect(renderer.root!.parent).toBe(renderer.container);
+  expect(renderer.root!.parent!.parent).toBeNull();
 });
 
 test("basic parent/child relationships", async () => {
@@ -39,7 +41,7 @@ test("host elements exposes fiber instance", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
 
-  const fiber = renderer.root!.unstable_fiber;
+  const fiber = renderer.root!.unstable_fiber!;
   expect(fiber.tag).toBe(FiberTag.HostComponent);
   expect(fiber.return!.tag).toBe(FiberTag.Root);
 });
@@ -59,7 +61,7 @@ test("can access composite parent props", async () => {
   await renderWithAct(renderer, <TestComponent className="test-class" onChange={handleChange} />);
   expect(renderer.root!.props).toEqual({ className: "test-class", children: "Hello!" });
 
-  const fiber = renderer.root!.unstable_fiber;
+  const fiber = renderer.root!.unstable_fiber!;
   expect(fiber.return!.tag).toBe(FiberTag.FunctionComponent);
   expect(fiber.return!.memoizedProps).toEqual({ className: "test-class", onChange: handleChange });
 });
