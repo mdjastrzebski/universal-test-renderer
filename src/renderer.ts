@@ -3,8 +3,6 @@ import type { FiberRoot } from "react-reconciler";
 import { ConcurrentRoot } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
-import { ContainerElement } from "./container-element";
-import { findAll, type FindAllOptions } from "./find-all";
 import { HostElement } from "./host-element";
 import type { Container } from "./reconciler";
 import { TestReconciler } from "./reconciler";
@@ -26,18 +24,14 @@ export type RootOptions = {
 export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
-
-  container: ContainerElement;
+  container: HostElement;
   root: HostElement | null;
-  findAll: (
-    predicate: (element: HostElement) => boolean,
-    options?: FindAllOptions,
-  ) => HostElement[];
 };
 
 export function createRoot(options?: RootOptions): Root {
   let container: Container | null = {
     tag: Tag.Container,
+    parent: null,
     children: [],
     isHidden: false,
     config: {
@@ -82,13 +76,13 @@ export function createRoot(options?: RootOptions): Root {
       throw new Error("Can't access .container on unmounted test renderer");
     }
 
-    return ContainerElement.fromContainer(container);
+    return HostElement.fromInstance(container);
   };
 
   return {
     render,
     unmount,
-    get container(): ContainerElement {
+    get container(): HostElement {
       return getContainer();
     },
     get root(): HostElement | null {
@@ -106,9 +100,6 @@ export function createRoot(options?: RootOptions): Root {
       }
 
       return HostElement.fromInstance(firstChild);
-    },
-    findAll: (predicate: (element: HostElement) => boolean, options?: FindAllOptions) => {
-      return findAll(getContainer(), predicate, options);
     },
   };
 }

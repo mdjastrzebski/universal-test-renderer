@@ -1,7 +1,9 @@
 import type { Fiber } from "react-reconciler";
 
 import { Tag } from "./constants";
-import type { Instance, TextInstance } from "./reconciler";
+import type { FindAllOptions } from "./find-all";
+import { findAll } from "./find-all";
+import type { Container, Instance, TextInstance } from "./reconciler";
 import type { JsonNode } from "./render-to-json";
 import { renderToJson } from "./render-to-json";
 
@@ -10,21 +12,32 @@ export type HostNode = HostElement | string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
-const instanceMap = new WeakMap<Instance, HostElement>();
+const instanceMap = new WeakMap<Instance | Container, HostElement>();
 
 export class HostElement {
-  private instance: Instance;
+  private instance: Instance | Container;
 
-  private constructor(instance: Instance) {
+  private constructor(instance: Instance | Container) {
     this.instance = instance;
   }
 
   get type(): string {
-    return this.instance.type;
+    return this.instance.tag === Tag.Instance
+      ? this.instance.type
+      : this.instance.config.containerType;
   }
 
   get props(): HostElementProps {
-    return this.instance.props;
+    return this.instance.tag === Tag.Instance ? this.instance.props : {};
+  }
+
+  get parent(): HostElement | null {
+    const parentInstance = this.instance.parent;
+    if (parentInstance == null) {
+      return null;
+    }
+
+    return HostElement.fromInstance(parentInstance);
   }
 
   get children(): HostNode[] {
@@ -34,25 +47,24 @@ export class HostElement {
     return result;
   }
 
-  get parent(): HostElement | null {
-    const parentInstance = this.instance.parent;
-    if (parentInstance == null || parentInstance.tag === Tag.Container) {
-      return null;
-    }
-
-    return HostElement.fromInstance(parentInstance);
+  get unstable_isContainer(): boolean {
+    return this.instance.tag === Tag.Container;
   }
 
-  get unstable_fiber(): Fiber {
-    return this.instance.unstable_fiber;
+  get unstable_fiber(): Fiber | null {
+    return this.instance.tag === Tag.Instance ? this.instance.unstable_fiber : null;
   }
 
   toJSON(): JsonNode | null {
     return renderToJson(this.instance);
   }
 
+  findAll(predicate: (element: HostElement) => boolean, options?: FindAllOptions): HostElement[] {
+    return findAll(this, predicate, options);
+  }
+
   /** @internal */
-  static fromInstance(instance: Instance): HostElement {
+  static fromInstance(instance: Instance | Container): HostElement {
     const hostElement = instanceMap.get(instance);
     if (hostElement) {
       return hostElement;

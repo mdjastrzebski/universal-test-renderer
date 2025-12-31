@@ -1,4 +1,3 @@
-import type { ContainerElement } from "./container-element";
 import type { HostElement } from "./host-element";
 
 export interface FindAllOptions {
@@ -7,7 +6,7 @@ export interface FindAllOptions {
 }
 
 export function findAll(
-  element: ContainerElement | HostElement,
+  element: HostElement,
   predicate: (element: HostElement) => boolean,
   options?: FindAllOptions,
 ): HostElement[] {

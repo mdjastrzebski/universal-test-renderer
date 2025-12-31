@@ -21,6 +21,7 @@ type ReconcilerConfig = {
 
 export type Container = {
   tag: typeof Tag.Container;
+  parent: null;
   children: Array<Instance | TextInstance>;
   isHidden: false;
   config: ReconcilerConfig;

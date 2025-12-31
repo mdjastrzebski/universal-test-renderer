@@ -109,7 +109,7 @@ test("findAll should find all elements that match the predicate", async () => {
     </body>,
   );
 
-  const elements = renderer.findAll((element) => element.type === "div");
+  const elements = renderer.container.findAll((element) => element.type === "div");
   expect(elements).toHaveLength(2);
   expect(elements[0]).toMatchInlineSnapshot(`
     <div>
@@ -137,7 +137,7 @@ test("findAll should find all elements that match the predicate with matchDeepes
     </body>,
   );
 
-  const elements = renderer.findAll((element) => element.type === "div", {
+  const elements = renderer.container.findAll((element) => element.type === "div", {
     matchDeepestOnly: true,
   });
   expect(elements).toHaveLength(2);
@@ -150,5 +150,59 @@ test("findAll should find all elements that match the predicate with matchDeepes
     <div>
       Baz!
     </div>
+  `);
+});
+
+test("container toJSON", async () => {
+  const renderer = createRoot();
+  await renderWithAct(renderer, <div>Hello!</div>);
+
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <Container>
+      <div>
+        Hello!
+      </div>
+    </Container>
+  `);
+
+  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+    <Container>
+      <div>
+        Hello!
+      </div>
+    </Container>
+  `);
+});
+
+test("container toJSON with fragment", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <>
+      <div>Hello!</div>
+      <span>World!</span>
+    </>,
+  );
+
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <Container>
+      <div>
+        Hello!
+      </div>
+      <span>
+        World!
+      </span>
+    </Container>
+  `);
+
+  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+    <Container>
+      <div>
+        Hello!
+      </div>
+      <span>
+        World!
+      </span>
+    </Container>
   `);
 });
