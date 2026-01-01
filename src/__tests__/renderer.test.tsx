@@ -158,19 +158,19 @@ test("container toJSON", async () => {
   await renderWithAct(renderer, <div>Hello!</div>);
 
   expect(renderer.container).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
-    </Container>
+    </>
   `);
 
   expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
-    </Container>
+    </>
   `);
 });
 
@@ -185,24 +185,24 @@ test("container toJSON with fragment", async () => {
   );
 
   expect(renderer.container).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
       <span>
         World!
       </span>
-    </Container>
+    </>
   `);
 
   expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
       <span>
         World!
       </span>
-    </Container>
+    </>
   `);
 });
