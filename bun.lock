@@ -5,6 +5,7 @@
     "": {
       "name": "universal-test-renderer",
       "dependencies": {
+        "@types/react-reconciler": "~0.31.0",
         "react-reconciler": "~0.31.0",
       },
       "devDependencies": {
@@ -13,7 +14,6 @@
         "@release-it/conventional-changelog": "^10.0.0",
         "@types/jest": "^30.0.0",
         "@types/react": "^19.0.10",
-        "@types/react-reconciler": "^0.28.9",
         "eslint": "^9.21.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "jest": "^30.2.0",
@@ -409,7 +409,7 @@
 
     "@types/react": ["@types/react@19.2.7", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg=="],
 
-    "@types/react-reconciler": ["@types/react-reconciler@0.28.9", "", { "peerDependencies": { "@types/react": "*" } }, "sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg=="],
+    "@types/react-reconciler": ["@types/react-reconciler@0.31.0", "", { "peerDependencies": { "@types/react": "*" } }, "sha512-wa1KtV3SHKnWeLHfZFg/7nrPSe/Ejdn+qbanNX4V6i9I7C3ECKPfBnC1KM3ef58KFWEohLmTvoTH5XuEIKGX2g=="],
 
     "@types/stack-utils": ["@types/stack-utils@2.0.3", "", {}, "sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw=="],
 
