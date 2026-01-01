@@ -12,10 +12,12 @@ beforeEach(() => {
 test("basic renderer usage", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
-  expect(renderer.root).toMatchInlineSnapshot(`
-    <div>
-      Hello!
-    </div>
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <div>
+        Hello!
+      </div>
+    </>
   `);
 });
 
@@ -24,10 +26,12 @@ test("render with single allowed text component", async () => {
     textComponents: ["Text"],
   });
   await renderWithAct(renderer, createElement("Text", null, "Hello!"));
-  expect(renderer.root).toMatchInlineSnapshot(`
-    <Text>
-      Hello!
-    </Text>
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <Text>
+        Hello!
+      </Text>
+    </>
   `);
 
   await renderWithAct(
@@ -36,10 +40,12 @@ test("render with single allowed text component", async () => {
       <hr />
     </div>,
   );
-  expect(renderer.root).toMatchInlineSnapshot(`
-    <div>
-      <hr />
-    </div>
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <div>
+        <hr />
+      </div>
+    </>
   `);
 
   await expect(() =>
@@ -60,6 +66,18 @@ test("render with two allowed text components", async () => {
       {createElement("B", null, "Hi!")}
     </div>,
   );
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <div>
+        <A>
+          Hello!
+        </A>
+        <B>
+          Hi!
+        </B>
+      </div>
+    </>
+  `);
 
   await expect(() =>
     renderWithAct(renderer, createElement("X", null, "Hello!")),
@@ -80,6 +98,21 @@ test("render with multiple allowed text components", async () => {
       {createElement("C", null, "Hola!")}
     </div>,
   );
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <div>
+        <A>
+          Hello!
+        </A>
+        <B>
+          Hi!
+        </B>
+        <C>
+          Hola!
+        </C>
+      </div>
+    </>
+  `);
 
   await expect(() =>
     renderWithAct(renderer, createElement("X", null, "Hello!")),
@@ -95,86 +128,10 @@ function NullComponent() {
 test("handles component rendering null", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <NullComponent />);
-  expect(renderer.root).toMatchInlineSnapshot(`null`);
+  expect(renderer.container).toMatchInlineSnapshot(`< />`);
 });
 
-test("findAll should find all elements that match the predicate", async () => {
-  const renderer = createRoot();
-  await renderWithAct(
-    renderer,
-    <body>
-      <div>Hello!</div>
-      <span>World!</span>
-      <div>Foo!</div>
-    </body>,
-  );
-
-  const elements = renderer.container.findAll((element) => element.type === "div");
-  expect(elements).toHaveLength(2);
-  expect(elements[0]).toMatchInlineSnapshot(`
-    <div>
-      Hello!
-    </div>
-  `);
-  expect(elements[1]).toMatchInlineSnapshot(`
-    <div>
-      Foo!
-    </div>
-  `);
-});
-
-test("findAll should find all elements that match the predicate with matchDeepestOnly option", async () => {
-  const renderer = createRoot();
-  await renderWithAct(
-    renderer,
-    <body>
-      <div>
-        Hello!
-        <div>Bar!</div>
-        <div>Baz!</div>
-      </div>
-      <span>World!</span>
-    </body>,
-  );
-
-  const elements = renderer.container.findAll((element) => element.type === "div", {
-    matchDeepestOnly: true,
-  });
-  expect(elements).toHaveLength(2);
-  expect(elements[0]).toMatchInlineSnapshot(`
-    <div>
-      Bar!
-    </div>
-  `);
-  expect(elements[1]).toMatchInlineSnapshot(`
-    <div>
-      Baz!
-    </div>
-  `);
-});
-
-test("container toJSON", async () => {
-  const renderer = createRoot();
-  await renderWithAct(renderer, <div>Hello!</div>);
-
-  expect(renderer.container).toMatchInlineSnapshot(`
-    <Container>
-      <div>
-        Hello!
-      </div>
-    </Container>
-  `);
-
-  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
-    <Container>
-      <div>
-        Hello!
-      </div>
-    </Container>
-  `);
-});
-
-test("container toJSON with fragment", async () => {
+test("container with fragment", async () => {
   const renderer = createRoot();
   await renderWithAct(
     renderer,
@@ -185,24 +142,24 @@ test("container toJSON with fragment", async () => {
   );
 
   expect(renderer.container).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
       <span>
         World!
       </span>
-    </Container>
+    </>
   `);
 
   expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
-    <Container>
+    <>
       <div>
         Hello!
       </div>
       <span>
         World!
       </span>
-    </Container>
+    </>
   `);
 });
