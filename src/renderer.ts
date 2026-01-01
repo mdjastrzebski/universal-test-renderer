@@ -56,7 +56,6 @@ export type Root = {
   render: (element: ReactElement) => void;
   unmount: () => void;
   container: HostElement;
-  root: HostElement | null;
 };
 
 export function createRoot(options?: RootOptions): Root {
@@ -102,35 +101,15 @@ export function createRoot(options?: RootOptions): Root {
     container = null;
   };
 
-  const getContainer = () => {
-    if (container == null) {
-      throw new Error("Can't access .container on unmounted test renderer");
-    }
-
-    return HostElement.fromInstance(container);
-  };
-
   return {
     render,
     unmount,
     get container(): HostElement {
-      return getContainer();
-    },
-    get root(): HostElement | null {
       if (container == null) {
-        throw new Error("Can't access .root on unmounted test renderer");
+        throw new Error("Can't access .container on unmounted test renderer");
       }
 
-      if (container.children.length === 0) {
-        return null;
-      }
-
-      const firstChild = container.children[0];
-      if (firstChild.tag === Tag.Text) {
-        throw new Error("Cannot render text as root element");
-      }
-
-      return HostElement.fromInstance(firstChild);
+      return HostElement.fromInstance(container);
     },
   };
 }

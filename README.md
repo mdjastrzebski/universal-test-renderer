@@ -29,10 +29,12 @@ test("example", () => {
     renderer.render(<div>Hello!</div>);
   });
 
-  expect(renderer.root).toMatchInlineSnapshot(`
-    <div>
-      Hello!
-    </div>
+  expect(renderer.container).toMatchInlineSnapshot(`
+    <>
+      <div>
+        Hello!
+      </div>
+    </>
   `);
 });
 ```

@@ -3,7 +3,7 @@ import { expect, jest, test } from "@jest/globals";
 import type { HostElement } from "../host-element";
 import { ReactWorkTag } from "../react-constants";
 import { createRoot } from "../renderer";
-import { renderWithAct } from "../test-utils/render";
+import { getRootElement, renderWithAct } from "../test-utils/render";
 
 beforeEach(() => {
   // @ts-expect-error global is not typed
@@ -14,9 +14,10 @@ test("container is root's parent", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
 
-  expect(renderer.root).toBeTruthy();
-  expect(renderer.root!.parent).toBe(renderer.container);
-  expect(renderer.root!.parent!.parent).toBeNull();
+  const root = getRootElement(renderer);
+  expect(root).toBeTruthy();
+  expect(root.parent).toBe(renderer.container);
+  expect(root.parent!.parent).toBeNull();
 });
 
 test("basic parent/child relationships", async () => {
@@ -29,19 +30,21 @@ test("basic parent/child relationships", async () => {
     </div>,
   );
 
-  const item1 = renderer.root!.children[0] as HostElement;
-  const item2 = renderer.root!.children[1] as HostElement;
+  const root = getRootElement(renderer);
+  const item1 = root.children[0] as HostElement;
+  const item2 = root.children[1] as HostElement;
   expect(item1.props["data-testid"]).toBe("item-1");
   expect(item2.props["data-testid"]).toBe("item-2");
-  expect(item1.parent).toBe(renderer.root);
-  expect(item2.parent).toBe(renderer.root);
+  expect(item1.parent).toBe(root);
+  expect(item2.parent).toBe(root);
 });
 
 test("host elements exposes fiber instance", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
 
-  const fiber = renderer.root!.unstable_fiber!;
+  const root = getRootElement(renderer);
+  const fiber = root.unstable_fiber!;
   expect(fiber.tag).toBe(ReactWorkTag.HostComponent);
   expect(fiber.return!.tag).toBe(ReactWorkTag.HostRoot);
 });
@@ -59,9 +62,11 @@ test("can access composite parent props", async () => {
   const handleChange = jest.fn();
   const renderer = createRoot();
   await renderWithAct(renderer, <TestComponent className="test-class" onChange={handleChange} />);
-  expect(renderer.root!.props).toEqual({ className: "test-class", children: "Hello!" });
 
-  const fiber = renderer.root!.unstable_fiber!;
+  const root = getRootElement(renderer);
+  expect(root.props).toEqual({ className: "test-class", children: "Hello!" });
+
+  const fiber = root.unstable_fiber!;
   expect(fiber.return!.tag).toBe(ReactWorkTag.FunctionComponent);
   expect(fiber.return!.memoizedProps).toEqual({ className: "test-class", onChange: handleChange });
 });
