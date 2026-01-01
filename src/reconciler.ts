@@ -1,11 +1,7 @@
 import type { ReactElement } from "react";
 import type { Fiber } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
-import {
-  DefaultEventPriority,
-  // @ts-expect-error missing types
-  NoEventPriority,
-} from "react-reconciler/constants";
+import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
 import { formatComponentList } from "./utils";
@@ -61,7 +57,6 @@ type HostContext = {
 
 const nodeToInstanceMap = new WeakMap<object, Instance>();
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 let currentUpdatePriority: number = NoEventPriority;
 
 const hostConfig: ReactReconciler.HostConfig<

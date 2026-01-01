@@ -1,7 +1,7 @@
 import { expect, jest, test } from "@jest/globals";
 
-import { FiberTag } from "../constants";
 import type { HostElement } from "../host-element";
+import { ReactWorkTag } from "../react-constants";
 import { createRoot } from "../renderer";
 import { renderWithAct } from "../test-utils/render";
 
@@ -42,8 +42,8 @@ test("host elements exposes fiber instance", async () => {
   await renderWithAct(renderer, <div>Hello!</div>);
 
   const fiber = renderer.root!.unstable_fiber!;
-  expect(fiber.tag).toBe(FiberTag.HostComponent);
-  expect(fiber.return!.tag).toBe(FiberTag.Root);
+  expect(fiber.tag).toBe(ReactWorkTag.HostComponent);
+  expect(fiber.return!.tag).toBe(ReactWorkTag.HostRoot);
 });
 
 interface TestComponentProps {
@@ -62,6 +62,6 @@ test("can access composite parent props", async () => {
   expect(renderer.root!.props).toEqual({ className: "test-class", children: "Hello!" });
 
   const fiber = renderer.root!.unstable_fiber!;
-  expect(fiber.return!.tag).toBe(FiberTag.FunctionComponent);
+  expect(fiber.return!.tag).toBe(ReactWorkTag.FunctionComponent);
   expect(fiber.return!.memoizedProps).toEqual({ className: "test-class", onChange: handleChange });
 });
