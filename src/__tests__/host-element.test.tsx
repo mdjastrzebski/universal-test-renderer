@@ -70,3 +70,58 @@ test("can access composite parent props", async () => {
   expect(fiber.return!.tag).toBe(ReactWorkTag.FunctionComponent);
   expect(fiber.return!.memoizedProps).toEqual({ className: "test-class", onChange: handleChange });
 });
+
+test("findAll should find all elements that match the predicate", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <body>
+      <div>Hello!</div>
+      <span>World!</span>
+      <div>Foo!</div>
+    </body>,
+  );
+
+  const elements = renderer.container.findAll((element) => element.type === "div");
+  expect(elements).toHaveLength(2);
+  expect(elements[0]).toMatchInlineSnapshot(`
+    <div>
+      Hello!
+    </div>
+  `);
+  expect(elements[1]).toMatchInlineSnapshot(`
+    <div>
+      Foo!
+    </div>
+  `);
+});
+
+test("findAll should find all elements that match the predicate with matchDeepestOnly option", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <body>
+      <div>
+        Hello!
+        <div>Bar!</div>
+        <div>Baz!</div>
+      </div>
+      <span>World!</span>
+    </body>,
+  );
+
+  const elements = renderer.container.findAll((element) => element.type === "div", {
+    matchDeepestOnly: true,
+  });
+  expect(elements).toHaveLength(2);
+  expect(elements[0]).toMatchInlineSnapshot(`
+    <div>
+      Bar!
+    </div>
+  `);
+  expect(elements[1]).toMatchInlineSnapshot(`
+    <div>
+      Baz!
+    </div>
+  `);
+});
