@@ -1,8 +1,8 @@
 import type { Fiber } from "react-reconciler";
 
 import { Tag } from "./constants";
-import type { FindAllOptions } from "./find-all";
-import { findAll } from "./find-all";
+import type { QueryOptions } from "./query-all";
+import { queryAll } from "./query-all";
 import type { Container, Instance, TextInstance } from "./reconciler";
 import type { JsonNode } from "./render-to-json";
 import { renderToJson } from "./render-to-json";
@@ -59,8 +59,11 @@ export class HostElement {
     return renderToJson(this.instance);
   }
 
-  findAll(predicate: (element: HostElement) => boolean, options?: FindAllOptions): HostElement[] {
-    return findAll(this, predicate, options);
+  queryAll(
+    predicate: (element: HostElement, options?: QueryOptions) => boolean,
+    options?: QueryOptions,
+  ): HostElement[] {
+    return queryAll(this, predicate, options);
   }
 
   /** @internal */

@@ -1,4 +1,4 @@
-import { expect, jest, test } from "@jest/globals";
+import { beforeEach, expect, jest, test } from "@jest/globals";
 
 import type { HostElement } from "../host-element";
 import { ReactWorkTag } from "../react-constants";
@@ -71,7 +71,7 @@ test("can access composite parent props", async () => {
   expect(fiber.return!.memoizedProps).toEqual({ className: "test-class", onChange: handleChange });
 });
 
-test("findAll should find all elements that match the predicate", async () => {
+test("queryAll should find all elements that match the predicate", async () => {
   const renderer = createRoot();
   await renderWithAct(
     renderer,
@@ -82,7 +82,7 @@ test("findAll should find all elements that match the predicate", async () => {
     </body>,
   );
 
-  const elements = renderer.container.findAll((element) => element.type === "div");
+  const elements = renderer.container.queryAll((element) => element.type === "div");
   expect(elements).toHaveLength(2);
   expect(elements[0]).toMatchInlineSnapshot(`
     <div>
@@ -96,7 +96,7 @@ test("findAll should find all elements that match the predicate", async () => {
   `);
 });
 
-test("findAll should find all elements that match the predicate with matchDeepestOnly option", async () => {
+test("queryAll should find all elements that match the predicate with matchDeepestOnly option", async () => {
   const renderer = createRoot();
   await renderWithAct(
     renderer,
@@ -110,7 +110,7 @@ test("findAll should find all elements that match the predicate with matchDeepes
     </body>,
   );
 
-  const elements = renderer.container.findAll((element) => element.type === "div", {
+  const elements = renderer.container.queryAll((element) => element.type === "div", {
     matchDeepestOnly: true,
   });
   expect(elements).toHaveLength(2);
@@ -124,4 +124,46 @@ test("findAll should find all elements that match the predicate with matchDeepes
       Baz!
     </div>
   `);
+});
+
+test("queryAll should not return self by default", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <body className="yes">
+      <div className="yes">Hello!</div>
+      <span className="yes">World!</span>
+      <div>Foo!</div>
+    </body>,
+  );
+
+  const elements = getRootElement(renderer).queryAll(
+    (element) => element.props.className === "yes",
+  );
+  expect(elements).toHaveLength(2);
+  expect(elements[0].type).toBe("div");
+  expect(elements[1].type).toBe("span");
+});
+
+test("queryAll should return self if 'includeSelf' is true", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <body className="yes">
+      <div className="yes">Hello!</div>
+      <span className="yes">World!</span>
+      <div>Foo!</div>
+    </body>,
+  );
+
+  const elements = getRootElement(renderer).queryAll(
+    (element) => element.props.className === "yes",
+    {
+      includeSelf: true,
+    },
+  );
+  expect(elements).toHaveLength(3);
+  expect(elements[0].type).toBe("body");
+  expect(elements[1].type).toBe("div");
+  expect(elements[2].type).toBe("span");
 });

@@ -1,16 +1,21 @@
 import type { HostElement } from "./host-element";
 
-export interface FindAllOptions {
-  /* Exclude any ancestors of deepest matched elements even if they match the predicate */
+export interface QueryOptions {
+  /** Include the element itself in the results if it matches the predicate. Defaults to false. */
+  includeSelf?: boolean;
+
+  /** Exclude any ancestors of deepest matched elements even if they match the predicate. Defaults to false. */
   matchDeepestOnly?: boolean;
 }
 
-export function findAll(
+export function queryAll(
   element: HostElement,
   predicate: (element: HostElement) => boolean,
-  options?: FindAllOptions,
+  options?: QueryOptions,
 ): HostElement[] {
+  const includeSelf = options?.includeSelf ?? false;
   const matchDeepestOnly = options?.matchDeepestOnly ?? false;
+
   const results: HostElement[] = [];
 
   // Match descendants first but do not add them to results yet.
@@ -21,12 +26,11 @@ export function findAll(
       return;
     }
 
-    matchingDescendants.push(...findAll(child, predicate, options));
+    matchingDescendants.push(...queryAll(child, predicate, { ...options, includeSelf: true }));
   });
 
-  const isHostElement = "props" in element;
   if (
-    isHostElement &&
+    includeSelf &&
     // When matchDeepestOnly = true: add current element only if no descendants match
     (matchingDescendants.length === 0 || !matchDeepestOnly) &&
     predicate(element)
