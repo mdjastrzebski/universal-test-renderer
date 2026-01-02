@@ -124,7 +124,7 @@ test("toJSON returns null for empty container", async () => {
 test("toJSON does not render container wrapper for single child", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
-  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.container).toMatchInlineSnapshot(`
     <div>
       Hello!
     </div>
@@ -140,7 +140,7 @@ test("toJSON renders container wrapper for multiple children", async () => {
       <span>World!</span>
     </>,
   );
-  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+  expect(renderer.container).toMatchInlineSnapshot(`
     <>
       <div>
         Hello!
