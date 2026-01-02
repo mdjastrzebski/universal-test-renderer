@@ -11,7 +11,6 @@ export type Props = Record<string, unknown>;
 
 type ReconcilerConfig = {
   textComponents?: string[];
-  containerType: string;
   createNodeMock: (element: ReactElement) => object;
 };
 

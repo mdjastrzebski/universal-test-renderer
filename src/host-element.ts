@@ -1,6 +1,6 @@
 import type { Fiber } from "react-reconciler";
 
-import { Tag } from "./constants";
+import { CONTAINER_TYPE, Tag } from "./constants";
 import type { QueryOptions } from "./query-all";
 import { queryAll } from "./query-all";
 import type { Container, Instance, TextInstance } from "./reconciler";
@@ -22,9 +22,7 @@ export class HostElement {
   }
 
   get type(): string {
-    return this.instance.tag === Tag.Instance
-      ? this.instance.type
-      : this.instance.config.containerType;
+    return this.instance.tag === Tag.Instance ? this.instance.type : CONTAINER_TYPE;
   }
 
   get props(): HostElementProps {
