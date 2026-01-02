@@ -27,9 +27,6 @@ export type RootOptions = {
   /** Types of valid text components. */
   textComponents?: string[];
 
-  /** Type of container component */
-  containerType?: string;
-
   createNodeMock?: (element: ReactElement) => object;
 
   /** Callback called when React catches an error in an Error Boundary. Called with the error caught by the Error Boundary, and an errorInfo object containing the componentStack. */
@@ -66,7 +63,6 @@ export function createRoot(options?: RootOptions): Root {
     isHidden: false,
     config: {
       textComponents: options?.textComponents,
-      containerType: options?.containerType ?? "",
       createNodeMock: options?.createNodeMock ?? defaultCreateMockNode,
     },
   };

@@ -1,4 +1,4 @@
-import { Tag } from "./constants";
+import { CONTAINER_TYPE, Tag } from "./constants";
 import type { Container, Instance, TextInstance } from "./reconciler";
 
 export type JsonNode = JsonElement | string;
@@ -12,7 +12,7 @@ export type JsonElement = {
 
 export function renderContainerToJson(instance: Container): JsonElement {
   return {
-    type: instance.config.containerType,
+    type: CONTAINER_TYPE,
     props: {},
     children: renderChildrenToJson(instance.children),
     $$typeof: Symbol.for("react.test.json"),
