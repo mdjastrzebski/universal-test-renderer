@@ -121,14 +121,14 @@ test("render with multiple allowed text components", async () => {
   );
 });
 
-function NullComponent() {
+function RenderNull() {
   return null;
 }
 
-test("handles component rendering null", async () => {
+test("toJSON returns null for empty container", async () => {
   const renderer = createRoot();
-  await renderWithAct(renderer, <NullComponent />);
-  expect(renderer.container).toMatchInlineSnapshot(`< />`);
+  await renderWithAct(renderer, <RenderNull />);
+  expect(renderer.container.toJSON()).toBeNull();
 });
 
 test("container with fragment", async () => {

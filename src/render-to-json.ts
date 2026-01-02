@@ -39,6 +39,11 @@ export function renderToJson(instance: Container | Instance | TextInstance): Jso
     }
 
     case Tag.Container: {
+      const visibleChildren = instance.children.filter((child) => !child.isHidden);
+      if (visibleChildren.length === 0) {
+        return null;
+      }
+
       const result = {
         type: instance.config.containerType,
         props: {},
