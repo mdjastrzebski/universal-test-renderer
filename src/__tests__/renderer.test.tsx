@@ -13,11 +13,9 @@ test("basic renderer usage", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <div>Hello!</div>);
   expect(renderer.container).toMatchInlineSnapshot(`
-    <>
-      <div>
-        Hello!
-      </div>
-    </>
+    <div>
+      Hello!
+    </div>
   `);
 });
 
@@ -27,11 +25,9 @@ test("render with single allowed text component", async () => {
   });
   await renderWithAct(renderer, createElement("Text", null, "Hello!"));
   expect(renderer.container).toMatchInlineSnapshot(`
-    <>
-      <Text>
-        Hello!
-      </Text>
-    </>
+    <Text>
+      Hello!
+    </Text>
   `);
 
   await renderWithAct(
@@ -41,11 +37,9 @@ test("render with single allowed text component", async () => {
     </div>,
   );
   expect(renderer.container).toMatchInlineSnapshot(`
-    <>
-      <div>
-        <hr />
-      </div>
-    </>
+    <div>
+      <hr />
+    </div>
   `);
 
   await expect(() =>
@@ -67,16 +61,14 @@ test("render with two allowed text components", async () => {
     </div>,
   );
   expect(renderer.container).toMatchInlineSnapshot(`
-    <>
-      <div>
-        <A>
-          Hello!
-        </A>
-        <B>
-          Hi!
-        </B>
-      </div>
-    </>
+    <div>
+      <A>
+        Hello!
+      </A>
+      <B>
+        Hi!
+      </B>
+    </div>
   `);
 
   await expect(() =>
@@ -99,19 +91,17 @@ test("render with multiple allowed text components", async () => {
     </div>,
   );
   expect(renderer.container).toMatchInlineSnapshot(`
-    <>
-      <div>
-        <A>
-          Hello!
-        </A>
-        <B>
-          Hi!
-        </B>
-        <C>
-          Hola!
-        </C>
-      </div>
-    </>
+    <div>
+      <A>
+        Hello!
+      </A>
+      <B>
+        Hi!
+      </B>
+      <C>
+        Hola!
+      </C>
+    </div>
   `);
 
   await expect(() =>
@@ -129,6 +119,37 @@ test("toJSON returns null for empty container", async () => {
   const renderer = createRoot();
   await renderWithAct(renderer, <RenderNull />);
   expect(renderer.container.toJSON()).toBeNull();
+});
+
+test("toJSON does not render container wrapper for single child", async () => {
+  const renderer = createRoot();
+  await renderWithAct(renderer, <div>Hello!</div>);
+  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+    <div>
+      Hello!
+    </div>
+  `);
+});
+
+test("toJSON renders container wrapper for multiple children", async () => {
+  const renderer = createRoot();
+  await renderWithAct(
+    renderer,
+    <>
+      <div>Hello!</div>
+      <span>World!</span>
+    </>,
+  );
+  expect(renderer.container.toJSON()).toMatchInlineSnapshot(`
+    <>
+      <div>
+        Hello!
+      </div>
+      <span>
+        World!
+      </span>
+    </>
+  `);
 });
 
 test("container with fragment", async () => {

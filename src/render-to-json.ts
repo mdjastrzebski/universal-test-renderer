@@ -44,6 +44,10 @@ export function renderToJson(instance: Container | Instance | TextInstance): Jso
         return null;
       }
 
+      if (visibleChildren.length === 1) {
+        return renderToJson(visibleChildren[0]);
+      }
+
       const result = {
         type: instance.config.containerType,
         props: {},
