@@ -4,8 +4,8 @@ import { Tag } from "./constants";
 import type { QueryOptions } from "./query-all";
 import { queryAll } from "./query-all";
 import type { Container, Instance, TextInstance } from "./reconciler";
-import type { JsonNode } from "./render-to-json";
-import { renderToJson } from "./render-to-json";
+import type { JsonElement } from "./render-to-json";
+import { renderContainerToJson, renderInstanceToJson } from "./render-to-json";
 
 export type HostNode = HostElement | string;
 
@@ -47,16 +47,14 @@ export class HostElement {
     return result;
   }
 
-  get unstable_isContainer(): boolean {
-    return this.instance.tag === Tag.Container;
-  }
-
   get unstable_fiber(): Fiber | null {
     return this.instance.tag === Tag.Instance ? this.instance.unstable_fiber : null;
   }
 
-  toJSON(): JsonNode | null {
-    return renderToJson(this.instance);
+  toJSON(): JsonElement | null {
+    return this.instance.tag === Tag.Container
+      ? renderContainerToJson(this.instance)
+      : renderInstanceToJson(this.instance);
   }
 
   queryAll(

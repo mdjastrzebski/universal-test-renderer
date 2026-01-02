@@ -10,57 +10,55 @@ export type JsonElement = {
   $$typeof: symbol;
 };
 
-export function renderToJson(instance: Container | Instance | TextInstance): JsonNode | null {
+export function renderContainerToJson(instance: Container): JsonElement {
+  return {
+    type: instance.config.containerType,
+    props: {},
+    children: renderChildrenToJson(instance.children),
+    $$typeof: Symbol.for("react.test.json"),
+  };
+}
+
+export function renderInstanceToJson(instance: Instance): JsonElement | null {
   if (instance.isHidden) {
     return null;
   }
 
-  switch (instance.tag) {
-    case Tag.Text:
-      return instance.text;
+  // We don't include the `children` prop in JSON.
+  // Instead, we will include the actual rendered children.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { children, ...restProps } = instance.props;
 
-    case Tag.Instance: {
-      // We don't include the `children` prop in JSON.
-      // Instead, we will include the actual rendered children.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { children, ...restProps } = instance.props;
-
-      const result = {
-        type: instance.type,
-        props: restProps,
-        children: renderChildrenToJson(instance.children),
-        $$typeof: Symbol.for("react.test.json"),
-      };
-      // This is needed for JEST to format snapshot as JSX.
-      Object.defineProperty(result, "$$typeof", {
-        value: Symbol.for("react.test.json"),
-      });
-      return result;
-    }
-
-    case Tag.Container: {
-      const result = {
-        type: instance.config.containerType,
-        props: {},
-        children: renderChildrenToJson(instance.children),
-        $$typeof: Symbol.for("react.test.json"),
-      };
-      // This is needed for JEST to format snapshot as JSX.
-      Object.defineProperty(result, "$$typeof", {
-        value: Symbol.for("react.test.json"),
-      });
-      return result;
-    }
-  }
+  return {
+    type: instance.type,
+    props: restProps,
+    children: renderChildrenToJson(instance.children),
+    $$typeof: Symbol.for("react.test.json"),
+  };
 }
 
-export function renderChildrenToJson(children: Array<Instance | TextInstance>) {
+export function renderTextInstanceToJson(instance: TextInstance): string | null {
+  if (instance.isHidden) {
+    return null;
+  }
+
+  return instance.text;
+}
+
+export function renderChildrenToJson(children: Array<Instance | TextInstance>): JsonNode[] {
   const result = [];
 
-  for (let i = 0; i < children.length; i++) {
-    const renderedChild = renderToJson(children[i]);
-    if (renderedChild !== null) {
-      result.push(renderedChild);
+  for (const child of children) {
+    if (child.tag === Tag.Instance) {
+      const renderedChild = renderInstanceToJson(child);
+      if (renderedChild !== null) {
+        result.push(renderedChild);
+      }
+    } else {
+      const renderedChild = renderTextInstanceToJson(child);
+      if (renderedChild !== null) {
+        result.push(renderedChild);
+      }
     }
   }
 
