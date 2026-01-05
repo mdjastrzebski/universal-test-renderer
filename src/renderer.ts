@@ -83,6 +83,10 @@ export function createRoot(options?: RootOptions): Root {
   );
 
   const render = (element: ReactElement) => {
+    if (containerFiber == null) {
+      throw new Error("Cannot render after unmount");
+    }
+
     TestReconciler.updateContainer(element, containerFiber, null, null);
   };
 
