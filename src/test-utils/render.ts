@@ -1,12 +1,15 @@
 import type { ReactElement } from "react";
-import { act } from "react";
+import { act as reactAct } from "react";
 
 import type { HostElement } from "../host-element";
 import type { Root } from "../renderer";
 
+export async function act<T>(callback: () => T | Promise<T>): Promise<T> {
+  return await reactAct(async () => callback());
+}
+
 export async function renderWithAct(root: Root, element: ReactElement) {
-  // eslint-disable-next-line @typescript-eslint/require-await -- intentionally triggering async act variant
-  await act(async () => {
+  await act(() => {
     root.render(element);
   });
 }
