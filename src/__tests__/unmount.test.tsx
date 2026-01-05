@@ -61,7 +61,5 @@ test("cannot render after unmount", async () => {
 
   await expect(
     renderWithAct(renderer, <div>New content</div>),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"Cannot render after unmount"`,
-  );
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Cannot render after unmount"`);
 });
