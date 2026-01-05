@@ -45,9 +45,11 @@ export default tseslint.config(
     files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
     },
   },
   {
-    ignores: ["node_modules/**", "dist/**", "*.config.{js,ts}"],
+    ignores: ["node_modules/**", "dist/**", "coverage/**", "*.config.{js,ts}"],
   },
 );

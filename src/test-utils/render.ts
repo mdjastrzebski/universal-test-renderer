@@ -14,6 +14,12 @@ export async function renderWithAct(root: Root, element: ReactElement) {
   });
 }
 
+export async function unmountWithAct(root: Root) {
+  await act(() => {
+    root.unmount();
+  });
+}
+
 export function getRootElement(renderer: Root): HostElement {
   const firstChild = renderer.container.children[0];
   if (typeof firstChild === "string") {
