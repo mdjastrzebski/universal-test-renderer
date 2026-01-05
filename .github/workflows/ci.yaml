@@ -22,16 +22,38 @@ jobs:
       - name: Run prettier
         run: bun run prettier
 
-      - name: Run typecheck
-        run: bun run typecheck
-
       - name: Run linter
         run: bun run lint
+
+      - name: Run typecheck
+        run: bun run typecheck
 
       - name: Run tests
         run: bun run test:ci
 
       - name: Upload coverage to Codecov
+        if: matrix.react-version == '19.0.0'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-react-versions:
+    name: Test React ${{ matrix.react-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react-version: ["^19.0.0", "^19.1.0", "^19.2.0", "latest", "next"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup deps
+        uses: ./.github/actions/setup
+
+      - name: Install React ${{ matrix.react-version }}
+        run: bun add -d react@${{ matrix.react-version }}
+
+      - name: Run typecheck
+        run: bun run typecheck
+
+      - name: Run tests
+        run: bun run test:ci
