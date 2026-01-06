@@ -1,8 +1,12 @@
 import { CONTAINER_TYPE, Tag } from "./constants";
 import type { Container, Instance, TextInstance } from "./reconciler";
 
+/** A node in the JSON representation - either a JsonElement or a text string. */
 export type JsonNode = JsonElement | string;
 
+/**
+ * JSON representation of a rendered element, compatible with react-test-renderer format.
+ */
 export type JsonElement = {
   type: string;
   props: object;
