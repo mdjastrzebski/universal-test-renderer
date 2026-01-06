@@ -30,8 +30,7 @@ export function renderInstanceToJson(instance: Instance): JsonElement | null {
 
   // We don't include the `children` prop in JSON.
   // Instead, we will include the actual rendered children.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...restProps } = instance.props;
+  const { children: _children, ...restProps } = instance.props;
 
   return {
     type: instance.type,
