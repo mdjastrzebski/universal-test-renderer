@@ -104,7 +104,7 @@ export class HostElement {
   }
 }
 
-export function getHostNodeForInstance(instance: Instance | TextInstance): HostNode {
+function getHostNodeForInstance(instance: Instance | TextInstance): HostNode {
   switch (instance.tag) {
     case Tag.Text:
       return instance.text;

@@ -556,7 +556,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *  be aware that it may change significantly between versions. You're taking on additional maintenance risk by
    * reading from it, and giving up all guarantees if you write something to it.
    */
-  // @ts-expect-error types are not updated
+  // @ts-expect-error @types/react-reconciler types don't fully match react-reconciler's actual Flow types.
+  // Correctness is verified through tests.
   commitUpdate(
     instance: Instance,
     type: Type,
