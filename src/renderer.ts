@@ -131,7 +131,7 @@ export function createRoot(options?: RootOptions): Root {
     unmount,
     get container(): HostElement {
       if (container == null) {
-        throw new Error("Can't access .container on unmounted test renderer");
+        throw new Error("Cannot access .container on unmounted test renderer");
       }
 
       return HostElement.fromInstance(container);
