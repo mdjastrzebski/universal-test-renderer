@@ -68,6 +68,9 @@ export function createRoot(options?: RootOptions): Root {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // @types/react-reconciler types don't fully match react-reconciler's actual Flow types.
+  // The return type is correct at runtime but TypeScript can't verify it statically.
+  // Correctness is verified through tests.
   let containerFiber = TestReconciler.createContainer(
     container,
     ConcurrentRoot,
@@ -77,7 +80,9 @@ export function createRoot(options?: RootOptions): Root {
     options?.identifierPrefix ?? "",
     options?.onUncaughtError ?? defaultOnUncaughtError,
     options?.onCaughtError ?? defaultOnCaughtError,
-    // @ts-expect-error missing types in @types/react-reconciler 0.31
+    // @ts-expect-error @types/react-reconciler types don't include onRecoverableError parameter
+    // in the createContainer signature, but react-reconciler's actual Flow types do.
+    // Correctness is verified through tests.
     options?.onRecoverableError ?? defaultOnRecoverableError,
     null, // transitionCallbacks
   );
