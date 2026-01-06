@@ -45,6 +45,13 @@ export class HostElement {
     return result;
   }
 
+  /**
+   * Access to the underlying React Fiber node. This is an unstable API that exposes
+   * internal react-reconciler structures which may change without warning in future
+   * React versions. Use with caution and only when absolutely necessary.
+   *
+   * @returns The Fiber node for this instance, or null if this is a container.
+   */
   get unstable_fiber(): Fiber | null {
     return this.instance.tag === Tag.Instance ? this.instance.unstable_fiber : null;
   }
