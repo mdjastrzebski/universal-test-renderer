@@ -1,4 +1,4 @@
-# Universal Test Renderer for React
+# Test Renderer for React
 
 A lightweight, JavaScript-only replacement for the deprecated React Test Renderer.
 

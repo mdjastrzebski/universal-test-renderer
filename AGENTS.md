@@ -1,8 +1,8 @@
-# Universal Test Renderer
+# Test Renderer for React
 
 ## Project Overview
 
-**Universal Test Renderer** is a lightweight, pure JavaScript testing library for React 19. It serves as a modern replacement for the deprecated `react-test-renderer`. By leveraging `react-reconciler`, it provides a custom renderer that outputs to a lightweight, traversable object structure (`HostElement`), making it ideal for snapshot testing and asserting component output without requiring a browser environment (DOM) or native dependencies.
+**Test Renderer for React** is a lightweight, pure JavaScript testing library for React 19. It serves as a modern replacement for the deprecated `react-test-renderer`. By leveraging `react-reconciler`, it provides a custom renderer that outputs to a lightweight, traversable object structure (`HostElement`), making it ideal for snapshot testing and asserting component output without requiring a browser environment (DOM) or native dependencies.
 
 ### Key Features
 
