@@ -55,7 +55,7 @@ Returns a `Root` object with:
 
 - `render(element)` - Render a React element. Must be called within `act()`.
 - `unmount()` - Unmount and clean up. Must be called within `act()`.
-- `container` - The root `HostElement` for querying and assertions.
+- `container` - A wrapper `HostElement` that contains the rendered element(s). Use this to query and inspect the rendered tree.
 
 ### `RootOptions`
 
