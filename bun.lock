@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "universal-test-renderer",
+      "name": "test-renderer",
       "dependencies": {
         "@types/react-reconciler": "~0.31.0",
         "react-reconciler": "~0.31.0",
