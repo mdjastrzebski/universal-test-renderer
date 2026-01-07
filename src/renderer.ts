@@ -27,8 +27,14 @@ const defaultOnRecoverableError = (error: unknown, errorInfo: ErrorInfo) => {
  * Options for configuring the test renderer root.
  */
 export type RootOptions = {
-  /** Types of valid text components. */
-  textComponents?: string[];
+  /** Types of host components that are allowed to contain text nodes. Trying to render text outside of these components will throw an error. */
+  textComponentTypes?: string[];
+
+  /**
+   * Host component types to display to users in the error message when they try to render text outside of `textComponentTypes`.
+   * Defaults to `textComponentTypes`, but you may want to override the components mentioned in the error message.
+   */
+  publicTextComponentTypes?: string[];
 
   /** Function to create mock nodes for refs. */
   createNodeMock?: (element: ReactElement) => object;
@@ -82,7 +88,8 @@ export function createRoot(options?: RootOptions): Root {
     children: [],
     isHidden: false,
     config: {
-      textComponents: options?.textComponents,
+      textComponentTypes: options?.textComponentTypes,
+      publicTextComponentTypes: options?.publicTextComponentTypes,
       createNodeMock: options?.createNodeMock ?? defaultCreateMockNode,
     },
   };
