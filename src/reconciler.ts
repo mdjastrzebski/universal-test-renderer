@@ -10,7 +10,8 @@ export type Type = string;
 export type Props = Record<string, unknown>;
 
 type ReconcilerConfig = {
-  textComponents?: string[];
+  textComponentTypes?: string[];
+  publicTextComponentTypes?: string[];
   createNodeMock: (element: ReactElement) => object;
 };
 
@@ -166,10 +167,13 @@ const hostConfig: ReactReconciler.HostConfig<
     hostContext: HostContext,
     _internalHandle: Fiber,
   ): TextInstance {
-    if (rootContainer.config.textComponents && !hostContext.isInsideText) {
+    if (rootContainer.config.textComponentTypes && !hostContext.isInsideText) {
+      const componentTypes =
+        rootContainer.config.publicTextComponentTypes ?? rootContainer.config.textComponentTypes;
+
       throw new Error(
         `Invariant Violation: Text strings must be rendered within a ${formatComponentList(
-          rootContainer.config.textComponents,
+          componentTypes,
         )} component. Detected attempt to render "${text}" string within a <${
           hostContext.type
         }> component.`,
@@ -291,7 +295,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getChildHostContext(parentHostContext: HostContext, type: Type): HostContext {
-    const isInsideText = Boolean(parentHostContext.config.textComponents?.includes(type));
+    const isInsideText = Boolean(parentHostContext.config.textComponentTypes?.includes(type));
     return { ...parentHostContext, type: type, isInsideText };
   },
 
