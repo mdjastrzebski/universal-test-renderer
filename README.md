@@ -14,14 +14,14 @@ A lightweight, JavaScript-only replacement for the deprecated React Test Rendere
 ## Installation
 
 ```bash
-npm install -D universal-test-renderer
+npm install -D test-renderer
 ```
 
 ## Basic Usage
 
 ```tsx
 import { act } from "react";
-import { createRoot } from "universal-test-renderer";
+import { createRoot } from "test-renderer";
 
 test("renders a component", async () => {
   const renderer = createRoot();

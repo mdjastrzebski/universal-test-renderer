@@ -1,5 +1,5 @@
 {
-  "name": "universal-test-renderer",
+  "name": "test-renderer",
   "version": "0.10.1",
   "description": "A lightweight, JavaScript-only replacement for the deprecated React Test Renderer.",
   "keywords": [
