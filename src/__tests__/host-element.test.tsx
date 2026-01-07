@@ -1,12 +1,11 @@
 import { beforeEach, expect, jest, test } from "@jest/globals";
 
 import type { HostElement } from "../host-element";
-import { ReactWorkTag } from "../react-constants";
 import { createRoot } from "../renderer";
+import { ReactWorkTag } from "../test-utils/react-constants";
 import { getRootElement, renderWithAct } from "../test-utils/render";
 
 beforeEach(() => {
-  // @ts-expect-error global is not typed
   global.IS_REACT_ACT_ENVIRONMENT = true;
 });
 

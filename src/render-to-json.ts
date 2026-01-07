@@ -1,8 +1,12 @@
 import { CONTAINER_TYPE, Tag } from "./constants";
 import type { Container, Instance, TextInstance } from "./reconciler";
 
+/** A node in the JSON representation - either a JsonElement or a text string. */
 export type JsonNode = JsonElement | string;
 
+/**
+ * JSON representation of a rendered element, compatible with react-test-renderer format.
+ */
 export type JsonElement = {
   type: string;
   props: object;
@@ -26,8 +30,7 @@ export function renderInstanceToJson(instance: Instance): JsonElement | null {
 
   // We don't include the `children` prop in JSON.
   // Instead, we will include the actual rendered children.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { children, ...restProps } = instance.props;
+  const { children: _children, ...restProps } = instance.props;
 
   return {
     type: instance.type,

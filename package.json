@@ -1,9 +1,16 @@
 {
   "name": "universal-test-renderer",
   "version": "0.10.1",
-  "description": "",
-  "keywords": [],
-  "author": "",
+  "description": "A lightweight, JavaScript-only replacement for the deprecated React Test Renderer.",
+  "keywords": [
+    "react",
+    "react-test-renderer",
+    "testing",
+    "test-renderer",
+    "react-19",
+    "jest"
+  ],
+  "author": "Maciej Jastrzebski <mdjastrzebski@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

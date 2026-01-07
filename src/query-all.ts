@@ -1,5 +1,8 @@
 import type { HostElement } from "./host-element";
 
+/**
+ * Options for querying elements in the rendered tree.
+ */
 export interface QueryOptions {
   /** Include the element itself in the results if it matches the predicate. Defaults to false. */
   includeSelf?: boolean;
@@ -8,6 +11,14 @@ export interface QueryOptions {
   matchDeepestOnly?: boolean;
 }
 
+/**
+ * Find all descendant elements matching the predicate.
+ *
+ * @param element - Root element to search from.
+ * @param predicate - Function that returns true for matching elements.
+ * @param options - Optional query configuration.
+ * @returns Array of matching elements in tree order.
+ */
 export function queryAll(
   element: HostElement,
   predicate: (element: HostElement) => boolean,
