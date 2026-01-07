@@ -10,8 +10,8 @@ import { renderContainerToJson, renderInstanceToJson } from "./render-to-json";
 /** A node in the rendered tree - either a HostElement or a text string. */
 export type HostNode = HostElement | string;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /** Props object for a host element. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HostElementProps = Record<string, any>;
 
 const instanceMap = new WeakMap<Instance | Container, HostElement>();

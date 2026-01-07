@@ -17,10 +17,7 @@ test("unmount clears the rendered content", async () => {
   await unmountWithAct(renderer);
   expect(containerElement.children.length).toBe(0);
 
-  expect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    renderer.container;
-  }).toThrow("Can't access .container on unmounted test renderer");
+  expect(() => renderer.container).toThrow("Cannot access .container on unmounted test renderer");
 });
 
 test("unmount can be called multiple times safely", async () => {
@@ -35,10 +32,7 @@ test("unmount can be called multiple times safely", async () => {
   await unmountWithAct(renderer);
   expect(containerElement.children.length).toBe(0);
 
-  expect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    renderer.container;
-  }).toThrow("Can't access .container on unmounted test renderer");
+  expect(() => renderer.container).toThrow("Cannot access .container on unmounted test renderer");
 });
 
 test("unmount when nothing is rendered", async () => {
@@ -46,10 +40,7 @@ test("unmount when nothing is rendered", async () => {
 
   await expect(() => unmountWithAct(renderer)).resolves.not.toThrow();
 
-  expect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    renderer.container;
-  }).toThrow("Can't access .container on unmounted test renderer");
+  expect(() => renderer.container).toThrow("Cannot access .container on unmounted test renderer");
 });
 
 test("cannot render after unmount", async () => {

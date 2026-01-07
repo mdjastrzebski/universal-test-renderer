@@ -87,10 +87,10 @@ export function createRoot(options?: RootOptions): Root {
     },
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   // @types/react-reconciler types don't fully match react-reconciler's actual Flow types.
   // The return type is correct at runtime but TypeScript can't verify it statically.
   // Correctness is verified through tests.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   let containerFiber = TestReconciler.createContainer(
     container,
     ConcurrentRoot,
