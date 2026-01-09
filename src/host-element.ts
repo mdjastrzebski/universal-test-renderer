@@ -84,10 +84,7 @@ export class HostElement {
    * @param options - Optional query configuration.
    * @returns Array of matching elements.
    */
-  queryAll(
-    predicate: (element: HostElement, options?: QueryOptions) => boolean,
-    options?: QueryOptions,
-  ): HostElement[] {
+  queryAll(predicate: (element: HostElement) => boolean, options?: QueryOptions): HostElement[] {
     return queryAll(this, predicate, options);
   }
 

@@ -153,12 +153,6 @@ await act(async () => {
 const tree = root.container;
 ```
 
-## Key Differences from React Test Renderer
-
-- **Host component focus**: Works at the host component level by default (no composite components in the tree). Access to composite component information is available via `unstable_fiber` when needed.
-- **Built on React Reconciler**: Implemented using React Reconciler to provide a custom renderer.
-- **Exposed reconciler options**: Exposes most React Reconciler configuration options for flexibility, allowing you to customize the renderer behavior for different use cases.
-
 ## Supported React Features
 
 This library supports all modern React features including:
