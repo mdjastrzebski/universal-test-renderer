@@ -13,7 +13,8 @@
 
 ### Architecture
 
-- **`src/renderer.ts`**: The main entry point. Exports `createRoot` which initializes the custom React reconciler.
+- **`src/index.ts`**: The public entry point that exports `createRoot` from `renderer.ts`.
+- **`src/renderer.ts`**: Contains the main implementation. Exports `createRoot` which initializes the custom React reconciler.
 - **`src/reconciler.ts`**: Implements the `react-reconciler` host config, translating React updates into operations on the internal tree.
 - **`src/host-element.ts`**: Defines `HostElement`, a wrapper around the internal fiber nodes that provides a user-friendly, DOM-like API (e.g., `children`, `props`, `parent`).
 - **`src/render-to-json.ts`**: Handles the serialization of `HostElement` trees into JSON format for snapshots.
@@ -41,7 +42,7 @@ The project uses **Bun** as the preferred runtime/package manager for developmen
 ## Development Conventions
 
 - **Language:** Strict TypeScript.
-- **Styling:** Code formatting is enforced by Prettier (`.prettierrc` implied by scripts).
+- **Styling:** Code formatting is enforced by Prettier (configured via npm scripts, no explicit config file, uses defaults).
 - **Testing:** Unit tests are located in `src/__tests__/`. Tests use `jest` and `ts-jest`.
 - **Linting:** ESLint is used for static analysis.
 - **Git:** Commits seem to follow standard conventions (implied by `release-it`).
