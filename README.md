@@ -1,20 +1,22 @@
 # Test Renderer for React
 
-A lightweight, JavaScript-only building block for creating Testing Library-style libraries that are not DOM-based. This library is used by [React Native Testing Library](https://github.com/callstack/react-native-testing-library) but is written generically to support different React variants and custom renderers.
+A lightweight, JS-only building block for creating Testing Library-style libraries.
 
-This library also serves as a replacement for the deprecated React Test Renderer. It is built using [`react-reconciler`](https://github.com/facebook/react/tree/main/packages/react-reconciler) to provide a custom renderer that operates on host elements by default, with fiber access available via `unstable_fiber` when needed. Most React Reconciler options are exposed for maximum flexibility.
+This library is used by [React Native Testing Library](https://github.com/callstack/react-native-testing-library) but is written generically to support different React variants and custom renderers.
+
+This library also serves as a replacement for the deprecated React Test Renderer. It is built using [React Reconciler](https://github.com/facebook/react/tree/main/packages/react-reconciler) to provide a custom renderer that operates on host elements by default, with proper escape hatches when needed. Most React Reconciler options are exposed for maximum flexibility.
 
 ## Installation
 
 ```bash
-npm install -D test-renderer
+yarn add -D test-renderer
 ```
 
 ## Getting Started
 
 ```tsx
-import { act } from "react";
 import { createRoot } from "test-renderer";
+import { act } from "react";
 
 test("renders a component", async () => {
   const renderer = createRoot();
@@ -34,103 +36,6 @@ test("renders a component", async () => {
 });
 ```
 
-## Basic Use Cases
-
-### Snapshot Testing
-
-The renderer produces a JSON representation of the rendered tree that works seamlessly with Jest and Vitest snapshots:
-
-```tsx
-const renderer = createRoot();
-await act(async () => {
-  renderer.render(
-    <div>
-      <span>Hello</span>
-      <span>World</span>
-    </div>,
-  );
-});
-
-expect(renderer.container).toMatchInlineSnapshot(`
-  <>
-    <div>
-      <span>
-        Hello
-      </span>
-      <span>
-        World
-      </span>
-    </div>
-  </>
-`);
-```
-
-### Querying Elements
-
-Use `queryAll()` to find elements in the rendered tree:
-
-```tsx
-const renderer = createRoot();
-await act(async () => {
-  renderer.render(
-    <div>
-      <button data-testid="btn-1">First</button>
-      <button data-testid="btn-2">Second</button>
-    </div>,
-  );
-});
-
-// Find all buttons
-const buttons = renderer.container.queryAll((el) => el.type === "button");
-expect(buttons).toHaveLength(2);
-
-// Find by props
-const btn1 = renderer.container.queryAll(
-  (el) => el.props["data-testid"] === "btn-1",
-);
-expect(btn1[0].children).toContain("First");
-```
-
-### React Native Simulation
-
-Configure `textComponentTypes` to simulate React Native's text rendering rules:
-
-```tsx
-import { createElement } from "react";
-
-const renderer = createRoot({
-  textComponentTypes: ["Text", "RCTText"],
-});
-
-await act(async () => {
-  renderer.render(createElement("Text", null, "Hello!"));
-});
-```
-
-### Mocking Refs
-
-Use `createNodeMock` to provide mock objects for refs:
-
-```tsx
-const renderer = createRoot({
-  createNodeMock: (element) => {
-    if (element.type === "input") {
-      return {
-        focus: jest.fn(),
-        value: "",
-      };
-    }
-    return {};
-  },
-});
-
-await act(async () => {
-  renderer.render(<input ref={inputRef} />);
-});
-
-inputRef.current.focus();
-```
-
 ## API Reference
 
 ### `createRoot(options?)`
@@ -138,6 +43,7 @@ inputRef.current.focus();
 Creates a new test renderer root instance.
 
 **Parameters:**
+
 - `options` (optional): Configuration options for the renderer. See [`RootOptions`](#rootoptions) below.
 
 **Returns:** A `Root` object with the following properties:
@@ -159,16 +65,16 @@ await act(async () => {
 
 Configuration options for the test renderer. Many of these options correspond to React Reconciler configuration options. For detailed information about reconciler-specific options, refer to the [React Reconciler source code](https://github.com/facebook/react/tree/main/packages/react-reconciler).
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `textComponentTypes` | `string[]` | Types of host components that are allowed to contain text nodes. Trying to render text outside of these components will throw an error. Useful for simulating React Native's text rendering rules. |
-| `publicTextComponentTypes` | `string[]` | Host component types to display to users in error messages when they try to render text outside of `textComponentTypes`. Defaults to `textComponentTypes` if not provided. |
-| `createNodeMock` | `(element: ReactElement) => object` | Function to create mock objects for refs. Called once per element that has a ref. Defaults to returning an empty object. |
-| `identifierPrefix` | `string` | A string prefix React uses for IDs generated by `useId()`. Useful to avoid conflicts when using multiple roots. |
-| `isStrictMode` | `boolean` | Enable React Strict Mode. When enabled, components render twice and effects run twice in development. |
-| `onCaughtError` | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when React catches an error in an Error Boundary. Called with the error caught by the Error Boundary and an errorInfo object containing the component stack. |
-| `onUncaughtError` | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when an error is thrown and not caught by an Error Boundary. Called with the error that was thrown and an errorInfo object containing the component stack. |
-| `onRecoverableError` | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when React automatically recovers from errors. Called with an error React throws and an errorInfo object containing the component stack. Some recoverable errors may include the original error cause as `error.cause`. |
+| Option                     | Type                                                               | Description                                                                                                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `textComponentTypes`       | `string[]`                                                         | Types of host components that are allowed to contain text nodes. Trying to render text outside of these components will throw an error. Useful for simulating React Native's text rendering rules.                                      |
+| `publicTextComponentTypes` | `string[]`                                                         | Host component types to display to users in error messages when they try to render text outside of `textComponentTypes`. Defaults to `textComponentTypes` if not provided.                                                              |
+| `createNodeMock`           | `(element: ReactElement) => object`                                | Function to create mock objects for refs. Called once per element that has a ref. Defaults to returning an empty object.                                                                                                                |
+| `identifierPrefix`         | `string`                                                           | A string prefix React uses for IDs generated by `useId()`. Useful to avoid conflicts when using multiple roots.                                                                                                                         |
+| `isStrictMode`             | `boolean`                                                          | Enable React Strict Mode. When enabled, components render twice and effects run twice in development.                                                                                                                                   |
+| `onCaughtError`            | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when React catches an error in an Error Boundary. Called with the error caught by the Error Boundary and an errorInfo object containing the component stack.                                                            |
+| `onUncaughtError`          | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when an error is thrown and not caught by an Error Boundary. Called with the error that was thrown and an errorInfo object containing the component stack.                                                              |
+| `onRecoverableError`       | `(error: unknown, errorInfo: { componentStack?: string }) => void` | Callback called when React automatically recovers from errors. Called with an error React throws and an errorInfo object containing the component stack. Some recoverable errors may include the original error cause as `error.cause`. |
 
 ### `HostElement`
 
@@ -176,11 +82,11 @@ A wrapper around rendered host elements that provides a DOM-like API for queryin
 
 **Properties:**
 
-- `type: string`: The element type (e.g., `"div"`, `"span"`). Returns an empty string for the container element.
+- `type: string`: The element type (e.g., `"View"`, `"div"`). Returns an empty string for the container element.
 - `props: HostElementProps`: The element's props object.
 - `children: HostNode[]`: Array of child nodes (elements and text strings). Hidden children are excluded.
 - `parent: HostElement | null`: The parent element, or `null` if this is the root container.
-- `unstable_fiber: Fiber | null`: Access to the underlying React Fiber node. **Warning:** This is an unstable API that exposes internal `react-reconciler` structures which may change without warning in future React versions. Use with caution and only when absolutely necessary.
+- `unstable_fiber: Fiber | null`: Access to the underlying React Fiber node. **Warning:** This is an unstable API that exposes internal React Reconciler structures which may change without warning in future React versions. Use with caution and only when absolutely necessary.
 
 **Methods:**
 
@@ -205,9 +111,9 @@ expect(root.children).toContain("Hello");
 
 Options for configuring element queries.
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `includeSelf` | `boolean` | `false` | Include the element itself in the results if it matches the predicate. |
+| Option             | Type      | Default | Description                                                                                                          |
+| ------------------ | --------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `includeSelf`      | `boolean` | `false` | Include the element itself in the results if it matches the predicate.                                               |
 | `matchDeepestOnly` | `boolean` | `false` | Exclude any ancestors of deepest matched elements even if they match the predicate. Only return the deepest matches. |
 
 **Example:**
@@ -217,24 +123,18 @@ Options for configuring element queries.
 const allDivs = container.queryAll((el) => el.type === "div");
 
 // Find only the deepest divs (exclude parent divs if they contain matching children)
-const deepestDivs = container.queryAll(
-  (el) => el.type === "div",
-  { matchDeepestOnly: true },
-);
+const deepestDivs = container.queryAll((el) => el.type === "div", { matchDeepestOnly: true });
 
 // Include the container itself if it matches
-const includingSelf = container.queryAll(
-  (el) => el.type === "div",
-  { includeSelf: true },
-);
+const includingSelf = container.queryAll((el) => el.type === "div", { includeSelf: true });
 ```
 
 ## Migration from React Test Renderer
 
 This library serves as a replacement for the deprecated React Test Renderer. The main differences are:
 
-- **Host element focus**: This library operates on host components by default, while React Test Renderer worked with composite components. You can access the underlying fiber via `unstable_fiber` if needed.
-- **Built on react-reconciler**: This library is built using `react-reconciler`, providing a custom renderer implementation.
+- **Host element focus**: This library operates on host components by default, while React Test Renderer worked with a mix of host and composite components. You can access the underlying fiber via `unstable_fiber` if needed.
+- **Built on React Reconciler**: This library is built using React Reconciler, providing a custom renderer implementation.
 - **Exposed reconciler options**: Most React Reconciler configuration options are exposed through `RootOptions` for maximum flexibility.
 
 For most use cases, the migration is straightforward:
@@ -246,27 +146,26 @@ const tree = TestRenderer.create(<MyComponent />);
 
 // After (test-renderer)
 import { createRoot } from "test-renderer";
-const renderer = createRoot();
+const root = createRoot();
 await act(async () => {
-  renderer.render(<MyComponent />);
+  root.render(<MyComponent />);
 });
-const tree = renderer.container;
+const tree = root.container;
 ```
 
 ## Key Differences from React Test Renderer
 
 - **Host component focus**: Works at the host component level by default (no composite components in the tree). Access to composite component information is available via `unstable_fiber` when needed.
-- **Built on react-reconciler**: Implemented using `react-reconciler` to provide a custom renderer.
+- **Built on React Reconciler**: Implemented using React Reconciler to provide a custom renderer.
 - **Exposed reconciler options**: Exposes most React Reconciler configuration options for flexibility, allowing you to customize the renderer behavior for different use cases.
 
 ## Supported React Features
 
 This library supports all modern React features including:
-- Suspense boundaries
-- Error boundaries
+
 - Concurrent rendering
-- React 19 features
-- Hooks and concurrent features
+- Error boundaries
+- Suspense boundaries
 
 ## License
 
