@@ -9,8 +9,9 @@ export type JsonNode = JsonElement | string;
  */
 export type JsonElement = {
   type: string;
-  props: object;
-  children: Array<JsonNode> | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: Record<string, any>;
+  children: JsonNode[] | null;
   $$typeof: symbol;
 };
 
