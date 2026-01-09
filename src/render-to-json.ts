@@ -11,7 +11,7 @@ export type JsonElement = {
   type: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   props: Record<string, any>;
-  children: JsonNode[] | null;
+  children: JsonNode[];
   $$typeof: symbol;
 };
 
@@ -55,12 +55,12 @@ export function renderChildrenToJson(children: Array<Instance | TextInstance>): 
   for (const child of children) {
     if (child.tag === Tag.Instance) {
       const renderedChild = renderInstanceToJson(child);
-      if (renderedChild !== null) {
+      if (renderedChild != null) {
         result.push(renderedChild);
       }
     } else {
       const renderedChild = renderTextInstanceToJson(child);
-      if (renderedChild !== null) {
+      if (renderedChild != null) {
         result.push(renderedChild);
       }
     }
