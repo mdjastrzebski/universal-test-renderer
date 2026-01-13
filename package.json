@@ -1,6 +1,6 @@
 {
   "name": "test-renderer",
-  "version": "0.13.2",
+  "version": "0.14.0",
   "description": "A lightweight, JavaScript-only replacement for the deprecated React Test Renderer.",
   "keywords": [
     "react",
