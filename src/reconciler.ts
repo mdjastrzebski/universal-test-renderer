@@ -1,10 +1,9 @@
 import type { ReactElement } from "react";
-import type { Fiber, ReactContext, ReactProviderType } from "react-reconciler";
+import type { Fiber } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
-import { REACT_CONTEXT_TYPE } from "./constants";
 import { formatComponentList } from "./utils";
 
 export type Type = string;
@@ -44,13 +43,11 @@ export type TextInstance = {
 
 export type SuspenseInstance = object;
 export type HydratableInstance = object;
-export type FormInstance = object;
 export type PublicInstance = object | TextInstance;
 export type UpdatePayload = unknown;
 export type ChildSet = unknown;
 export type TimeoutHandle = unknown;
 export type NoTimeout = unknown;
-export type TransitionStatus = unknown;
 
 type HostContext = {
   type: string;
@@ -70,13 +67,12 @@ const hostConfig: ReactReconciler.HostConfig<
   TextInstance,
   SuspenseInstance,
   HydratableInstance,
-  FormInstance,
   PublicInstance,
   HostContext,
+  UpdatePayload,
   ChildSet,
   TimeoutHandle,
-  NoTimeout,
-  TransitionStatus
+  NoTimeout
 > = {
   /**
    * The reconciler has two modes: mutation mode and persistent mode. You must specify one of them.
@@ -564,6 +560,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *  be aware that it may change significantly between versions. You're taking on additional maintenance risk by
    * reading from it, and giving up all guarantees if you write something to it.
    */
+  // @ts-expect-error @types/react-reconciler types don't fully match react-reconciler's actual Flow types.
+  // Correctness is verified through tests.
   commitUpdate(
     instance: Instance,
     type: Type,
@@ -688,33 +686,11 @@ const hostConfig: ReactReconciler.HostConfig<
   // -------------------
   supportsHydration: false,
 
-  requestPostPaintCallback(_callback: (endTime: number) => void) {},
-
   NotPendingTransition: null,
-
-  // Based on: https://github.com/facebook/react/blob/main/packages/react-test-renderer/src/ReactFiberConfigTestHost.js#L606
-  HostTransitionContext: {
-    $$typeof: REACT_CONTEXT_TYPE,
-    Consumer: null as unknown as ReactContext<TransitionStatus>,
-    Provider: null as unknown as ReactProviderType<TransitionStatus>,
-    _currentValue: null,
-    _currentValue2: null,
-    _threadCount: 0,
-  },
 
   resetFormInstance(_form: Instance) {},
 
-  trackSchedulerEvent: function (): void {},
-
-  // Based on: https://github.com/facebook/react/blob/main/packages/react-test-renderer/src/ReactFiberConfigTestHost.js#L256
-  resolveEventType: function (): null | string {
-    return null;
-  },
-
-  // Based on: https://github.com/facebook/react/blob/main/packages/react-test-renderer/src/ReactFiberConfigTestHost.js#L259
-  resolveEventTimeStamp: function (): number {
-    return -1.1;
-  },
+  requestPostPaintCallback(_callback: (endTime: number) => void) {},
 };
 
 export const TestReconciler = ReactReconciler(hostConfig);

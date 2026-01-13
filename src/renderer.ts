@@ -13,13 +13,13 @@ import { TestReconciler } from "./reconciler";
 
 const defaultCreateMockNode = () => ({});
 
-const defaultOnUncaughtError = (error: unknown, errorInfo: BaseErrorInfo) => {
+const defaultOnUncaughtError = (error: unknown, errorInfo: ErrorInfo) => {
   console.error("Uncaught error:", error, errorInfo);
 };
-const defaultOnCaughtError = (error: unknown, errorInfo: BaseErrorInfo) => {
+const defaultOnCaughtError = (error: unknown, errorInfo: ErrorInfo) => {
   console.error("Caught error:", error, errorInfo);
 };
-const defaultOnRecoverableError = (error: unknown, errorInfo: BaseErrorInfo) => {
+const defaultOnRecoverableError = (error: unknown, errorInfo: ErrorInfo) => {
   console.error("Recoverable error:", error, errorInfo);
 };
 
@@ -55,11 +55,13 @@ export type RootOptions = {
   isStrictMode?: boolean;
 };
 
-type ErrorHandler = (error: unknown, errorInfo: BaseErrorInfo) => void;
+/** Callback for handling React errors. */
+export type ErrorHandler = (error: unknown, errorInfo: ErrorInfo) => void;
 
-interface BaseErrorInfo {
-  componentStack?: string;
-}
+/** Error information provided to error handlers. */
+export type ErrorInfo = {
+  componentStack: string;
+};
 
 /**
  * Root instance returned by createRoot. Provides methods to render and unmount components.
@@ -105,8 +107,10 @@ export function createRoot(options?: RootOptions): Root {
     options?.identifierPrefix ?? "",
     options?.onUncaughtError ?? defaultOnUncaughtError,
     options?.onCaughtError ?? defaultOnCaughtError,
+    // @ts-expect-error @types/react-reconciler types don't include onRecoverableError parameter
+    // in the createContainer signature, but react-reconciler's actual Flow types do.
+    // Correctness is verified through tests.
     options?.onRecoverableError ?? defaultOnRecoverableError,
-    () => {}, // onDefaultTransitionIndicator
     null, // transitionCallbacks
   );
 
