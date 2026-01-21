@@ -30,14 +30,15 @@ The project uses **Bun** as the preferred runtime/package manager for developmen
 
 ### Key Commands
 
-| Command             | Description                                                    |
-| :------------------ | :------------------------------------------------------------- |
-| `bun run build`     | Builds the project using `tsup` into `dist/` (CJS and ESM).    |
-| `bun run dev`       | Runs the build in watch mode.                                  |
-| `bun run test`      | Runs the test suite using `jest`.                              |
-| `bun run lint`      | Runs `eslint` to check code style.                             |
-| `bun run typecheck` | Runs `tsc` to verify types.                                    |
-| `bun run validate`  | Runs formatting, linting, typechecking, and tests in sequence. |
+| Command                | Description                                                    |
+| :--------------------- | :------------------------------------------------------------- |
+| `bun run build`        | Builds the project using `tsup` into `dist/` (CJS and ESM).    |
+| `bun run dev`          | Runs the build in watch mode.                                  |
+| `bun run test`         | Runs the test suite using `jest`.                              |
+| `bun run lint`         | Runs `eslint` to check code style.                             |
+| `bun run typecheck`    | Runs `tsc` to verify types.                                    |
+| `bun run validate`     | Runs typechecking, tests, linting, and formatting in sequence. |
+| `bun run validate:fix` | Runs validate with auto-fix for formatting and linting issues. |
 
 ## Development Conventions
 

@@ -43,7 +43,7 @@
     "typecheck": "tsc --noEmit",
     "test:watch": "jest --watch",
     "validate": "bun run typecheck && bun run test && bun run lint && bun run prettier",
-    "validate:fix": "bun run prettier:write && bun run lint --fix && bun run typecheck && bun run test -u",
+    "validate:fix": "bun run prettier:fix && bun run lint --fix && bun run typecheck && bun run test -u",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "release": "release-it"

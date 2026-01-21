@@ -262,8 +262,9 @@ const hostConfig: ReactReconciler.HostConfig<
   },
 
   resolveUpdatePriority(): number {
-    mark("reconciler:resolveUpdatePriority", { priority: currentUpdatePriority || DefaultEventPriority });
-    return currentUpdatePriority || DefaultEventPriority;
+    const priority = currentUpdatePriority || DefaultEventPriority;
+    mark("reconciler:resolveUpdatePriority", { priority });
+    return priority;
   },
 
   shouldAttemptEagerTransition() {

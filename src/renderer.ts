@@ -125,8 +125,11 @@ export function createRoot(options?: RootOptions): Root {
     }
 
     measureStart("render");
-    TestReconciler.updateContainer(element, containerFiber, null, null);
-    measureEnd("render", { elementType: String(element.type) });
+    try {
+      TestReconciler.updateContainer(element, containerFiber, null, null);
+    } finally {
+      measureEnd("render", { elementType: String(element.type) });
+    }
   };
 
   const unmount = () => {
@@ -135,8 +138,11 @@ export function createRoot(options?: RootOptions): Root {
     }
 
     measureStart("unmount");
-    TestReconciler.updateContainer(null, containerFiber, null, null);
-    measureEnd("unmount");
+    try {
+      TestReconciler.updateContainer(null, containerFiber, null, null);
+    } finally {
+      measureEnd("unmount");
+    }
 
     containerFiber = null;
     container = null;
