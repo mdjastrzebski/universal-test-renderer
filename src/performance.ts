@@ -1,27 +1,33 @@
-let enabled = false;
+let _enableMetrics = false;
 
-export function setPerformanceMetricsEnabled(value: boolean): void {
-  enabled = value;
-}
-
-export function isPerformanceMetricsEnabled(): boolean {
-  return enabled;
+export function setPerformanceMetricsEnabled(enabled: boolean): void {
+  _enableMetrics = enabled;
 }
 
 export function mark(name: string, details?: Record<string, unknown>): void {
-  if (!enabled) return;
+  if (!_enableMetrics) {
+    return;
+  }
+
   performance.mark(`test-renderer:${name}`, { detail: details });
 }
 
-export function markStart(name: string): string {
-  const markName = `test-renderer:${name}:start`;
-  if (!enabled) return markName;
-  performance.mark(markName);
-  return markName;
+export function measureStart(name: string): void {
+  if (!_enableMetrics) {
+    return;
+  }
+  
+  performance.mark(`test-renderer:${name}:start`);
 }
 
-export function measure(name: string, startMark: string, details?: Record<string, unknown>): void {
-  if (!enabled) return;
+export function measureEnd(name: string, details?: Record<string, unknown>): void {
+  if (!_enableMetrics) {
+    return;
+  }
+  
   performance.mark(`test-renderer:${name}:end`);
-  performance.measure(`test-renderer:${name}`, { start: startMark, detail: details });
+  performance.measure(`test-renderer:${name}`, {
+    start: `test-renderer:${name}:start`,
+    detail: details,
+  });
 }

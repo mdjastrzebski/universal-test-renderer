@@ -3,7 +3,7 @@ import { ConcurrentRoot } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
 import { HostElement } from "./host-element";
-import { markStart, measure } from "./performance";
+import { measureEnd, measureStart } from "./performance";
 import type { Container } from "./reconciler";
 import { TestReconciler } from "./reconciler";
 
@@ -83,7 +83,7 @@ export type Root = {
  * @returns A Root instance with render, unmount, and container properties.
  */
 export function createRoot(options?: RootOptions): Root {
-  const createRootStart = markStart("createRoot");
+  measureStart("createRoot");
 
   let container: Container | null = {
     tag: Tag.Container,
@@ -117,16 +117,16 @@ export function createRoot(options?: RootOptions): Root {
     null, // transitionCallbacks
   );
 
-  measure("createRoot", createRootStart);
+  measureEnd("createRoot");
 
   const render = (element: ReactElement) => {
     if (containerFiber == null) {
       throw new Error("Cannot render after unmount");
     }
 
-    const renderStart = markStart("render");
+    measureStart("render");
     TestReconciler.updateContainer(element, containerFiber, null, null);
-    measure("render", renderStart, { elementType: String(element.type) });
+    measureEnd("render", { elementType: String(element.type) });
   };
 
   const unmount = () => {
@@ -134,9 +134,9 @@ export function createRoot(options?: RootOptions): Root {
       return;
     }
 
-    const unmountStart = markStart("unmount");
+    measureStart("unmount");
     TestReconciler.updateContainer(null, containerFiber, null, null);
-    measure("unmount", unmountStart);
+    measureEnd("unmount");
 
     containerFiber = null;
     container = null;
