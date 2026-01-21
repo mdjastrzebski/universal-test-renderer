@@ -4,6 +4,7 @@ import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
+import { mark } from "./performance";
 import { formatComponentList } from "./utils";
 
 export type Type = string;
@@ -143,6 +144,7 @@ const hostConfig: ReactReconciler.HostConfig<
     _hostContext: HostContext,
     internalHandle: Fiber,
   ) {
+    mark("createInstance", { type, propKeys: Object.keys(props) });
     return {
       tag: Tag.Instance,
       type,
@@ -167,6 +169,8 @@ const hostConfig: ReactReconciler.HostConfig<
     hostContext: HostContext,
     _internalHandle: Fiber,
   ): TextInstance {
+    mark("createTextInstance", { text });
+
     if (rootContainer.config.textComponentTypes && !hostContext.isInsideText) {
       const componentTypes =
         rootContainer.config.publicTextComponentTypes ?? rootContainer.config.textComponentTypes;
@@ -217,12 +221,13 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, you should return `false`.
    */
   finalizeInitialChildren(
-    _instance: Instance,
+    instance: Instance,
     _type: Type,
     _props: Props,
     _rootContainer: Container,
     _hostContext: HostContext,
   ): boolean {
+    mark("finalizeInitialChildren", { type: instance.type });
     return false;
   },
 
@@ -241,7 +246,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, you should return `false`.
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
-  shouldSetTextContent(_type: Type, _props: Props): boolean {
+  shouldSetTextContent(type: Type, _props: Props): boolean {
+    mark("shouldSetTextContent", { type });
     return false;
   },
 
@@ -271,6 +277,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getRootHostContext(rootContainer: Container): HostContext | null {
+    mark("getRootHostContext");
     return {
       type: "ROOT",
       config: rootContainer.config,
@@ -295,6 +302,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getChildHostContext(parentHostContext: HostContext, type: Type): HostContext {
+    mark("getChildHostContext", { type });
     const isInsideText = Boolean(parentHostContext.config.textComponentTypes?.includes(type));
     return { ...parentHostContext, type: type, isInsideText };
   },
@@ -308,6 +316,10 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, return `instance`.
    */
   getPublicInstance(instance: Instance | TextInstance): PublicInstance {
+    mark("getPublicInstance", {
+      type: instance.tag === Tag.Instance ? instance.type : "text",
+    });
+
     switch (instance.tag) {
       case Tag.Instance: {
         const createNodeMock = instance.rootContainer.config.createNodeMock;
@@ -337,6 +349,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * Even if you don't want to do anything here, you need to return `null` from it.
    */
   prepareForCommit(_containerInfo: Container) {
+    mark("prepareForCommit");
     return null; // noop
   },
 
@@ -349,6 +362,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * You can leave it empty.
    */
   resetAfterCommit(_containerInfo: Container): void {
+    mark("resetAfterCommit");
     // noop
   },
 
@@ -358,6 +372,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method is called for a container that's used as a portal target. Usually you can leave it empty.
    */
   preparePortalMount(_containerInfo: Container): void {
+    mark("preparePortalMount");
     // noop
   },
 
@@ -509,7 +524,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `shouldSetTextContent`, you can leave it empty.
    */
-  resetTextContent(_instance: Instance): void {
+  resetTextContent(instance: Instance): void {
+    mark("resetTextContent", { type: instance.type });
     // noop
   },
 
@@ -520,7 +536,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * Here, `textInstance` is a node created by `createTextInstance`.
    */
-  commitTextUpdate(textInstance: TextInstance, _oldText: string, newText: string): void {
+  commitTextUpdate(textInstance: TextInstance, oldText: string, newText: string): void {
+    mark("commitTextUpdate", { oldText, newText });
     textInstance.text = newText;
   },
 
@@ -543,7 +560,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
    */
-  commitMount(_instance: Instance, _type: Type, _props: Props, _internalHandle: Fiber): void {
+  commitMount(instance: Instance, _type: Type, _props: Props, _internalHandle: Fiber): void {
+    mark("commitMount", { type: instance.type });
     // noop
   },
 
@@ -569,6 +587,7 @@ const hostConfig: ReactReconciler.HostConfig<
     nextProps: Props,
     internalHandle: Fiber,
   ): void {
+    mark("commitUpdate", { type, propKeys: Object.keys(nextProps) });
     instance.type = type;
     instance.props = nextProps;
     instance.unstable_fiber = internalHandle;
@@ -581,6 +600,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * visual styling to hide it. It is used by Suspense to hide the tree while the fallback is visible.
    */
   hideInstance(instance: Instance): void {
+    mark("hideInstance", { type: instance.type });
     instance.isHidden = true;
   },
 
@@ -590,6 +610,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * Same as `hideInstance`, but for nodes created by `createTextInstance`.
    */
   hideTextInstance(textInstance: TextInstance): void {
+    mark("hideTextInstance", { text: textInstance.text });
     textInstance.isHidden = true;
   },
 
@@ -599,6 +620,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method should make the `instance` visible, undoing what `hideInstance` did.
    */
   unhideInstance(instance: Instance, _props: Props): void {
+    mark("unhideInstance", { type: instance.type });
     instance.isHidden = false;
   },
 
@@ -608,6 +630,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * Same as `unhideInstance`, but for nodes created by `createTextInstance`.
    */
   unhideTextInstance(textInstance: TextInstance, _text: string): void {
+    mark("unhideTextInstance", { text: textInstance.text });
     textInstance.isHidden = false;
   },
 
@@ -617,6 +640,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method should mutate the `container` root node and remove all children from it.
    */
   clearContainer(container: Container): void {
+    mark("clearContainer");
     container.children.forEach((child) => {
       child.parent = null;
     });
@@ -704,6 +728,11 @@ export const TestReconciler = ReactReconciler(hostConfig);
  * look at `commitMount`.
  */
 function appendChild(parentInstance: Container | Instance, child: Instance | TextInstance): void {
+  mark("appendChild", {
+    parentType: parentInstance.tag === Tag.Container ? "container" : parentInstance.type,
+    childType: child.tag === Tag.Text ? "text" : child.type,
+  });
+
   const index = parentInstance.children.indexOf(child);
   if (index !== -1) {
     parentInstance.children.splice(index, 1);
@@ -727,6 +756,12 @@ function insertBefore(
   child: Instance | TextInstance,
   beforeChild: Instance | TextInstance,
 ): void {
+  mark("insertBefore", {
+    parentType: parentInstance.tag === Tag.Container ? "container" : parentInstance.type,
+    childType: child.tag === Tag.Text ? "text" : child.type,
+    beforeChildType: beforeChild.tag === Tag.Text ? "text" : beforeChild.type,
+  });
+
   const index = parentInstance.children.indexOf(child);
   if (index !== -1) {
     parentInstance.children.splice(index, 1);
@@ -744,6 +779,11 @@ function insertBefore(
  * collection would take care of the whole subtree. You are not expected to traverse the child tree in it.
  */
 function removeChild(parentInstance: Container | Instance, child: Instance | TextInstance): void {
+  mark("removeChild", {
+    parentType: parentInstance.tag === Tag.Container ? "container" : parentInstance.type,
+    childType: child.tag === Tag.Text ? "text" : child.type,
+  });
+
   const index = parentInstance.children.indexOf(child);
   parentInstance.children.splice(index, 1);
   child.parent = null;

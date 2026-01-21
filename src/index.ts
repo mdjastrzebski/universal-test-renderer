@@ -1,4 +1,5 @@
 export { createRoot } from "./renderer";
+export { setPerformanceMetricsEnabled } from "./performance";
 
 export type { Root, RootOptions } from "./renderer";
 export type { HostElement, HostElementProps, HostNode } from "./host-element";
