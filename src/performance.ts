@@ -9,7 +9,7 @@ export function mark(name: string, details?: Record<string, unknown>): void {
     return;
   }
 
-  performance.mark(`test-renderer:${name}`, { detail: details });
+  performance.mark(`test-renderer/${name}`, { detail: details });
 }
 
 export function measureStart(name: string): void {
@@ -17,7 +17,7 @@ export function measureStart(name: string): void {
     return;
   }
 
-  performance.mark(`test-renderer:${name}:start`);
+  performance.mark(`test-renderer/${name}:start`);
 }
 
 export function measureEnd(name: string, details?: Record<string, unknown>): void {
@@ -25,10 +25,10 @@ export function measureEnd(name: string, details?: Record<string, unknown>): voi
     return;
   }
 
-  performance.mark(`test-renderer:${name}:end`);
-  performance.measure(`test-renderer:${name}`, {
-    start: `test-renderer:${name}:start`,
-    end: `test-renderer:${name}:end`,
+  performance.mark(`test-renderer/${name}:end`);
+  performance.measure(`test-renderer/${name}`, {
+    start: `test-renderer/${name}:start`,
+    end: `test-renderer/${name}:end`,
     detail: details,
   });
 }

@@ -5,3 +5,10 @@ export const ReactWorkTag = {
   HostRoot: 3,
   HostComponent: 5,
 } as const;
+
+// Source: https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactEventPriorities.js
+export const NoEventPriority = 0;
+export const DiscreteEventPriority = 2;
+export const ContinuousEventPriority = 8;
+export const DefaultEventPriority = 32;
+export const IdleEventPriority = 0b0010000000000000000000000000000;
