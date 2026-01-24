@@ -1,11 +1,15 @@
-let _enableMetrics = false;
+declare global {
+  var TEST_RENDERER_ENABLE_PROFILING: boolean | undefined;
+}
+
+globalThis.TEST_RENDERER_ENABLE_PROFILING ??= false;
 
 export function setPerformanceMetricsEnabled(enabled: boolean): void {
-  _enableMetrics = enabled;
+  globalThis.TEST_RENDERER_ENABLE_PROFILING = enabled;
 }
 
 export function mark(name: string, details?: Record<string, unknown>): void {
-  if (!_enableMetrics) {
+  if (!globalThis.TEST_RENDERER_ENABLE_PROFILING) {
     return;
   }
 
@@ -13,7 +17,7 @@ export function mark(name: string, details?: Record<string, unknown>): void {
 }
 
 export function measureStart(name: string): void {
-  if (!_enableMetrics) {
+  if (!globalThis.TEST_RENDERER_ENABLE_PROFILING) {
     return;
   }
 
@@ -21,7 +25,7 @@ export function measureStart(name: string): void {
 }
 
 export function measureEnd(name: string, details?: Record<string, unknown>): void {
-  if (!_enableMetrics) {
+  if (!globalThis.TEST_RENDERER_ENABLE_PROFILING) {
     return;
   }
 

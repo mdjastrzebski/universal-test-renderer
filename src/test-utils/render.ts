@@ -6,18 +6,22 @@ import type { Root } from "../renderer";
 
 /** @internal */
 export async function act<T>(callback: () => T | Promise<T>): Promise<T> {
-  return await reactAct(async () => callback());
+  performance.mark("ACT:start");
+  const result = await reactAct(async () => {
+    performance.mark("ACT:sync start");
+    const result = await callback();
+    performance.mark("ACT:sync end");
+    return result;
+  });
+  performance.mark("ACT:async end");
+  return result;
 }
 
 /** @internal */
 export async function renderWithAct(root: Root, element: ReactElement) {
-  performance.mark("ACT:start");
   await act(() => {
-    performance.mark("ACT:sync start");
     root.render(element);
-    performance.mark("ACT:sync end");
   });
-  performance.mark("ACT:async end");
 }
 
 /** @internal */
