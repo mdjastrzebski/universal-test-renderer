@@ -2,12 +2,6 @@ declare global {
   var TEST_RENDERER_ENABLE_PROFILING: boolean | undefined;
 }
 
-globalThis.TEST_RENDERER_ENABLE_PROFILING ??= false;
-
-export function setPerformanceMetricsEnabled(enabled: boolean): void {
-  globalThis.TEST_RENDERER_ENABLE_PROFILING = enabled;
-}
-
 export function mark(name: string, details?: Record<string, unknown>): void {
   if (!globalThis.TEST_RENDERER_ENABLE_PROFILING) {
     return;

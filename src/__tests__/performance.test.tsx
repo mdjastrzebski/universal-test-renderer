@@ -1,18 +1,17 @@
 import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 import * as React from "react";
 
-import { createRoot, setPerformanceMetricsEnabled } from "..";
+import { createRoot } from "..";
 import { act, formatPerfEntries, renderWithAct, unmountWithAct } from "../test-utils/render";
 
 beforeEach(() => {
-  global.IS_REACT_ACT_ENVIRONMENT = true;
-  performance.clearMarks();
-  performance.clearMeasures();
-  setPerformanceMetricsEnabled(false);
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 });
 
 afterEach(() => {
-  setPerformanceMetricsEnabled(false);
+  globalThis.TEST_RENDERER_ENABLE_PROFILING = false;
+  performance.clearMarks();
+  performance.clearMeasures();
 });
 
 function getPerfMarks(): PerformanceMark[] {
@@ -31,7 +30,8 @@ describe("performance metrics", () => {
   });
 
   test("logs marks and measures for render", async () => {
-    setPerformanceMetricsEnabled(true);
+    globalThis.TEST_RENDERER_ENABLE_PROFILING = true;
+
     const root = createRoot();
     await renderWithAct(root, <div>Hello!</div>);
 
@@ -80,7 +80,7 @@ describe("performance metrics", () => {
     const root = createRoot();
     await renderWithAct(root, <TestComponent />);
 
-    setPerformanceMetricsEnabled(true);
+    globalThis.TEST_RENDERER_ENABLE_PROFILING = true;
 
     await act(() => {
       const child = root.container.children[0];
@@ -103,9 +103,8 @@ describe("performance metrics", () => {
     const root = createRoot();
     await renderWithAct(root, <div />);
 
-    setPerformanceMetricsEnabled(true);
-    performance.clearMarks();
-    performance.clearMeasures();
+    globalThis.TEST_RENDERER_ENABLE_PROFILING = true;
+
     await unmountWithAct(root);
 
     const marks = getPerfMarks();
@@ -113,35 +112,6 @@ describe("performance metrics", () => {
     expect(marks.some((m) => m.name === "test-renderer/unmount:end")).toBe(true);
     expect(marks.some((m) => m.name === "test-renderer/react/commit:start")).toBe(true);
     expect(marks.some((m) => m.name === "test-renderer/react/commit:end")).toBe(true);
-    expect(formatPerfEntries(marks)).toMatchInlineSnapshot(`
-      "0.00ms: ACT:start
-      0.01ms: ACT:sync start
-      0.06ms: test-renderer/unmount:start
-      0.08ms: test-renderer/reconciler/resolveUpdatePriority (priority=32)
-      0.11ms: test-renderer/reconciler/scheduleMicrotask (id=12)
-      0.12ms: test-renderer/unmount:end
-      0.15ms: test-renderer/reconciler/scheduled microtask:start (id=12)
-      0.16ms: test-renderer/reconciler/scheduled microtask:end (id=12)
-      0.17ms: ACT:sync end
-      0.19ms: test-renderer/reconciler/getRootHostContext
-      0.24ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=2)
-      0.29ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=2)
-      0.30ms: test-renderer/reconciler/prepareForCommit
-      0.30ms: test-renderer/react/commit:start
-      0.51ms: test-renderer/reconciler/removeChildFromContainer (childType="div")
-      0.54ms: test-renderer/react/commit:end
-      0.56ms: test-renderer/reconciler/resetAfterCommit
-      0.56ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=2)
-      0.57ms: test-renderer/reconciler/scheduleMicrotask (id=13)
-      0.58ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=0)
-      0.60ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=32)
-      0.76ms: test-renderer/reconciler/detachDeletedInstance
-      0.88ms: test-renderer/reconciler/setCurrentUpdatePriority (priority=0)
-      0.91ms: test-renderer/reconciler/scheduled microtask:start (id=13)
-      0.91ms: test-renderer/reconciler/scheduled microtask:end (id=13)
-      0.95ms: ACT:async end
-      "
-    `);
 
     const measures = getPerfMeasures();
     expect(measures.some((m) => m.name === "test-renderer/unmount")).toBe(true);

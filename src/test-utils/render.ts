@@ -2,18 +2,19 @@ import type { ReactElement } from "react";
 import { act as reactAct } from "react";
 
 import type { HostElement } from "../host-element";
+import { mark } from "../performance";
 import type { Root } from "../renderer";
 
 /** @internal */
 export async function act<T>(callback: () => T | Promise<T>): Promise<T> {
-  performance.mark("ACT:start");
+  mark("act:start");
   const result = await reactAct(async () => {
-    performance.mark("ACT:sync start");
+    mark("act callback:start");
     const result = await callback();
-    performance.mark("ACT:sync end");
+    mark("act callback:end");
     return result;
   });
-  performance.mark("ACT:async end");
+  mark("act:end");
   return result;
 }
 

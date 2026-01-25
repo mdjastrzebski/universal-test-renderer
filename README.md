@@ -152,7 +152,7 @@ For most use cases, the migration is straightforward:
 import TestRenderer from "react-test-renderer";
 const tree = TestRenderer.create(<MyComponent />);
 
-// After (test-renderer)
+// After (Test Renderer)
 import { createRoot } from "test-renderer";
 const root = createRoot();
 await act(async () => {
@@ -163,12 +163,10 @@ const tree = root.container;
 
 ## Performance Metrics
 
-The library includes optional performance instrumentation using the standard Performance API. All marks and measures are prefixed with `test-renderer/` for easy filtering.
+The library includes optional performance instrumentation using the [Performance API](https://developer.mozilla.org/en-US/docs/Web/API/Performance). All marks and measures are prefixed with `test-renderer/` for easy filtering.
 
 ```tsx
-import { setPerformanceMetricsEnabled } from "test-renderer";
-
-setPerformanceMetricsEnabled(true);
+globalThis.TEST_RENDERER_ENABLE_PROFILING = true;
 
 // Run your tests, then query metrics:
 const marks = performance
