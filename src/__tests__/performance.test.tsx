@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 import * as React from "react";
 
 import { createRoot } from "..";
-import { act, formatPerfEntries, renderWithAct, unmountWithAct } from "../test-utils/render";
+import { act, renderWithAct, unmountWithAct } from "../test-utils/render";
 
 beforeEach(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
