@@ -4,6 +4,7 @@ import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants";
 
 import { Tag } from "./constants";
+import { mark, measureEnd, measureStart } from "./performance";
 import { formatComponentList } from "./utils";
 
 export type Type = string;
@@ -143,6 +144,8 @@ const hostConfig: ReactReconciler.HostConfig<
     _hostContext: HostContext,
     internalHandle: Fiber,
   ) {
+    mark("reconciler/createInstance", { type });
+
     return {
       tag: Tag.Instance,
       type,
@@ -167,6 +170,8 @@ const hostConfig: ReactReconciler.HostConfig<
     hostContext: HostContext,
     _internalHandle: Fiber,
   ): TextInstance {
+    mark("reconciler/createTextInstance", { text });
+
     if (rootContainer.config.textComponentTypes && !hostContext.isInsideText) {
       const componentTypes =
         rootContainer.config.publicTextComponentTypes ?? rootContainer.config.textComponentTypes;
@@ -198,7 +203,16 @@ const hostConfig: ReactReconciler.HostConfig<
    * must not modify any other nodes. It's called while the tree is still being built up and not connected
    * to the actual tree on the screen.
    */
-  appendInitialChild: appendChild,
+  appendInitialChild(parentInstance: Instance, child: Instance | TextInstance): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/appendInitialChild", {
+        parentType: parentInstance.type,
+        childType: formatInstanceType(child),
+      });
+    }
+
+    appendChild(parentInstance, child);
+  },
 
   /**
    * #### `finalizeInitialChildren(instance, type, props, rootContainer, hostContext)`
@@ -217,12 +231,14 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, you should return `false`.
    */
   finalizeInitialChildren(
-    _instance: Instance,
+    instance: Instance,
     _type: Type,
     _props: Props,
     _rootContainer: Container,
     _hostContext: HostContext,
   ): boolean {
+    mark("reconciler/finalizeInitialChildren", { type: instance.type });
+
     return false;
   },
 
@@ -241,12 +257,16 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, you should return `false`.
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
-  shouldSetTextContent(_type: Type, _props: Props): boolean {
+  shouldSetTextContent(type: Type, _props: Props): boolean {
+    mark("reconciler/shouldSetTextContent", { type, result: false });
+
     return false;
   },
 
-  setCurrentUpdatePriority(newPriority: number) {
-    currentUpdatePriority = newPriority;
+  setCurrentUpdatePriority(priority: number) {
+    mark("reconciler/setCurrentUpdatePriority", { priority });
+
+    currentUpdatePriority = priority;
   },
 
   getCurrentUpdatePriority() {
@@ -254,10 +274,15 @@ const hostConfig: ReactReconciler.HostConfig<
   },
 
   resolveUpdatePriority(): number {
-    return currentUpdatePriority || DefaultEventPriority;
+    const priority = currentUpdatePriority || DefaultEventPriority;
+    mark("reconciler/resolveUpdatePriority", { priority });
+
+    return priority;
   },
 
   shouldAttemptEagerTransition() {
+    mark("reconciler/shouldAttemptEagerTransition", { result: false });
+
     return false;
   },
 
@@ -271,6 +296,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getRootHostContext(rootContainer: Container): HostContext | null {
+    mark("reconciler/getRootHostContext");
+
     return {
       type: "ROOT",
       config: rootContainer.config,
@@ -295,6 +322,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method happens **in the render phase**. Do not mutate the tree from it.
    */
   getChildHostContext(parentHostContext: HostContext, type: Type): HostContext {
+    mark("reconciler/getChildHostContext", { type });
+
     const isInsideText = Boolean(parentHostContext.config.textComponentTypes?.includes(type));
     return { ...parentHostContext, type: type, isInsideText };
   },
@@ -308,6 +337,12 @@ const hostConfig: ReactReconciler.HostConfig<
    * If you don't want to do anything here, return `instance`.
    */
   getPublicInstance(instance: Instance | TextInstance): PublicInstance {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/getPublicInstance", {
+        type: formatInstanceType(instance),
+      });
+    }
+
     switch (instance.tag) {
       case Tag.Instance: {
         const createNodeMock = instance.rootContainer.config.createNodeMock;
@@ -337,6 +372,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * Even if you don't want to do anything here, you need to return `null` from it.
    */
   prepareForCommit(_containerInfo: Container) {
+    mark("reconciler/prepareForCommit");
+    measureStart("react/commit");
+
     return null; // noop
   },
 
@@ -349,7 +387,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * You can leave it empty.
    */
   resetAfterCommit(_containerInfo: Container): void {
-    // noop
+    measureEnd("react/commit");
+    mark("reconciler/resetAfterCommit");
   },
 
   /**
@@ -358,7 +397,7 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method is called for a container that's used as a portal target. Usually you can leave it empty.
    */
   preparePortalMount(_containerInfo: Container): void {
-    // noop
+    mark("reconciler/preparePortalMount");
   },
 
   /**
@@ -366,14 +405,26 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * You can proxy this to `setTimeout` or its equivalent in your environment.
    */
-  scheduleTimeout: setTimeout,
+  scheduleTimeout(fn: () => void, delay: number): ReturnType<typeof setTimeout> {
+    const id = setTimeout(() => {
+      mark("reconciler/scheduled timeout:start");
+      fn();
+      mark("reconciler/scheduled timeout:end");
+    }, delay);
+    mark("reconciler/scheduleTimeout", { id });
+    return id;
+  },
 
   /**
    * #### `cancelTimeout(id)`
    *
    * You can proxy this to `clearTimeout` or its equivalent in your environment.
    */
-  cancelTimeout: clearTimeout,
+  cancelTimeout(id: ReturnType<typeof setTimeout>): void {
+    mark("reconciler/cancelTimeout", { id });
+
+    clearTimeout(id);
+  },
 
   /**
    * #### `noTimeout`
@@ -398,7 +449,15 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * Optional. You can proxy this to `queueMicrotask` or its equivalent in your environment.
    */
-  scheduleMicrotask: queueMicrotask,
+  scheduleMicrotask(fn: () => void): ReturnType<typeof queueMicrotask> {
+    mark("reconciler/scheduleMicrotask");
+
+    queueMicrotask(() => {
+      mark("reconciler/scheduled microtask:start");
+      fn();
+      mark("reconciler/scheduled microtask:end");
+    });
+  },
 
   /**
    * #### `isPrimaryRenderer`
@@ -415,6 +474,8 @@ const hostConfig: ReactReconciler.HostConfig<
   warnsIfNotActing: true,
 
   getInstanceFromNode(node: object): Fiber | null | undefined {
+    mark("reconciler/getInstanceFromNode");
+
     const instance = nodeToInstanceMap.get(node);
     if (instance !== undefined) {
       return instance.unstable_fiber;
@@ -424,22 +485,28 @@ const hostConfig: ReactReconciler.HostConfig<
   },
 
   beforeActiveInstanceBlur(): void {
-    // noop
+    mark("reconciler/beforeActiveInstanceBlur");
   },
 
   afterActiveInstanceBlur(): void {
-    // noop
+    mark("reconciler/afterActiveInstanceBlur");
   },
 
   prepareScopeUpdate(scopeInstance: object, instance: Instance): void {
+    mark("reconciler/prepareScopeUpdate");
+
     nodeToInstanceMap.set(scopeInstance, instance);
   },
 
   getInstanceFromScope(scopeInstance: object): Instance | null {
+    mark("reconciler/getInstanceFromScope");
+
     return nodeToInstanceMap.get(scopeInstance) ?? null;
   },
 
-  detachDeletedInstance(_node: Instance): void {},
+  detachDeletedInstance(_node: Instance): void {
+    mark("reconciler/detachDeletedInstance");
+  },
 
   /**
    * #### `appendChild(parentInstance, child)`
@@ -450,7 +517,16 @@ const hostConfig: ReactReconciler.HostConfig<
    * Although this method currently runs in the commit phase, you still should not mutate any other nodes
    * in it. If you need to do some additional work when a node is definitely connected to the visible tree, look at `commitMount`.
    */
-  appendChild: appendChild,
+  appendChild(parentInstance: Instance, child: Instance | TextInstance): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/appendChild", {
+        parentType: parentInstance.type,
+        childType: formatInstanceType(child),
+      });
+    }
+
+    appendChild(parentInstance, child);
+  },
 
   /**
    * #### `appendChildToContainer(container, child)`
@@ -459,7 +535,15 @@ const hostConfig: ReactReconciler.HostConfig<
    * to the root has a slightly different implementation, or if the root container nodes are of a different
    * type than the rest of the tree.
    */
-  appendChildToContainer: appendChild,
+  appendChildToContainer(container: Container, child: Instance | TextInstance): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/appendChildToContainer", {
+        childType: formatInstanceType(child),
+      });
+    }
+
+    appendChild(container, child);
+  },
 
   /**
    * #### `insertBefore(parentInstance, child, beforeChild)`
@@ -470,7 +554,20 @@ const hostConfig: ReactReconciler.HostConfig<
    * Note that React uses this method both for insertions and for reordering nodes. Similar to DOM, it is expected
    * that you can call `insertBefore` to reposition an existing child. Do not mutate any other parts of the tree from it.
    */
-  insertBefore: insertBefore,
+  insertBefore(
+    parentInstance: Instance,
+    child: Instance | TextInstance,
+    beforeChild: Instance | TextInstance,
+  ): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/insertBefore", {
+        parentType: parentInstance.type,
+        childType: formatInstanceType(child),
+        beforeChildType: formatInstanceType(beforeChild),
+      });
+    }
+    insertBefore(parentInstance, child, beforeChild);
+  },
 
   /**
    * #### `insertInContainerBefore(container, child, beforeChild)
@@ -479,7 +576,19 @@ const hostConfig: ReactReconciler.HostConfig<
    * to the root has a slightly different implementation, or if the root container nodes are of a different type
    * than the rest of the tree.
    */
-  insertInContainerBefore: insertBefore,
+  insertInContainerBefore(
+    container: Container,
+    child: Instance | TextInstance,
+    beforeChild: Instance | TextInstance,
+  ): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/insertInContainerBefore", {
+        childType: formatInstanceType(child),
+        beforeChildType: formatInstanceType(beforeChild),
+      });
+    }
+    insertBefore(container, child, beforeChild);
+  },
 
   /**
    * #### `removeChild(parentInstance, child)`
@@ -489,7 +598,15 @@ const hostConfig: ReactReconciler.HostConfig<
    * React will only call it for the top-level node that is being removed. It is expected that garbage collection
    * would take care of the whole subtree. You are not expected to traverse the child tree in it.
    */
-  removeChild: removeChild,
+  removeChild(parentInstance: Instance, child: Instance | TextInstance): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/removeChild", {
+        parentType: parentInstance.type,
+        childType: formatInstanceType(child),
+      });
+    }
+    removeChild(parentInstance, child);
+  },
 
   /**
    * #### `removeChildFromContainer(container, child)`
@@ -498,7 +615,14 @@ const hostConfig: ReactReconciler.HostConfig<
    * to the root has a slightly different implementation, or if the root container nodes are of a different type
    * than the rest of the tree.
    */
-  removeChildFromContainer: removeChild,
+  removeChildFromContainer(container: Container, child: Instance | TextInstance): void {
+    if (globalThis.TEST_RENDERER_ENABLE_PROFILING) {
+      mark("reconciler/removeChildFromContainer", {
+        childType: formatInstanceType(child),
+      });
+    }
+    removeChild(container, child);
+  },
 
   /**
    * #### `resetTextContent(instance)`
@@ -509,8 +633,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `shouldSetTextContent`, you can leave it empty.
    */
-  resetTextContent(_instance: Instance): void {
-    // noop
+  resetTextContent(instance: Instance): void {
+    mark("reconciler/resetTextContent", { type: instance.type });
   },
 
   /**
@@ -520,7 +644,9 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * Here, `textInstance` is a node created by `createTextInstance`.
    */
-  commitTextUpdate(textInstance: TextInstance, _oldText: string, newText: string): void {
+  commitTextUpdate(textInstance: TextInstance, oldText: string, newText: string): void {
+    mark("reconciler/commitTextUpdate", { oldText, newText });
+
     textInstance.text = newText;
   },
 
@@ -543,8 +669,8 @@ const hostConfig: ReactReconciler.HostConfig<
    *
    * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
    */
-  commitMount(_instance: Instance, _type: Type, _props: Props, _internalHandle: Fiber): void {
-    // noop
+  commitMount(_instance: Instance, type: Type, _props: Props, _internalHandle: Fiber): void {
+    mark("reconciler/commitMount", { type });
   },
 
   /**
@@ -569,6 +695,8 @@ const hostConfig: ReactReconciler.HostConfig<
     nextProps: Props,
     internalHandle: Fiber,
   ): void {
+    mark("reconciler/commitUpdate", { type });
+
     instance.type = type;
     instance.props = nextProps;
     instance.unstable_fiber = internalHandle;
@@ -581,6 +709,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * visual styling to hide it. It is used by Suspense to hide the tree while the fallback is visible.
    */
   hideInstance(instance: Instance): void {
+    mark("reconciler/hideInstance", { type: instance.type });
+
     instance.isHidden = true;
   },
 
@@ -590,6 +720,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * Same as `hideInstance`, but for nodes created by `createTextInstance`.
    */
   hideTextInstance(textInstance: TextInstance): void {
+    mark("reconciler/hideTextInstance", { text: textInstance.text });
+
     textInstance.isHidden = true;
   },
 
@@ -599,6 +731,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method should make the `instance` visible, undoing what `hideInstance` did.
    */
   unhideInstance(instance: Instance, _props: Props): void {
+    mark("reconciler/unhideInstance", { type: instance.type });
+
     instance.isHidden = false;
   },
 
@@ -608,6 +742,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * Same as `unhideInstance`, but for nodes created by `createTextInstance`.
    */
   unhideTextInstance(textInstance: TextInstance, _text: string): void {
+    mark("reconciler/unhideTextInstance", { text: textInstance.text });
+
     textInstance.isHidden = false;
   },
 
@@ -617,6 +753,8 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method should mutate the `container` root node and remove all children from it.
    */
   clearContainer(container: Container): void {
+    mark("reconciler/clearContainer");
+
     container.children.forEach((child) => {
       child.parent = null;
     });
@@ -630,7 +768,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method is called during render to determine if the Host Component type and props require
    * some kind of loading process to complete before committing an update.
    */
-  maySuspendCommit(_type: Type, _props: Props): boolean {
+  maySuspendCommit(type: Type, _props: Props): boolean {
+    mark("reconciler/maySuspendCommit", { type });
+
     return false;
   },
 
@@ -640,7 +780,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method may be called during render if the Host Component type and props might suspend a commit.
    * It can be used to initiate any work that might shorten the duration of a suspended commit.
    */
-  preloadInstance(_type: Type, _props: Props): boolean {
+  preloadInstance(type: Type, _props: Props): boolean {
+    mark("reconciler/preloadInstance", { type });
+
     return true;
   },
 
@@ -650,7 +792,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method is called just before the commit phase. Use it to set up any necessary state while any Host
    * Components that might suspend this commit are evaluated to determine if the commit must be suspended.
    */
-  startSuspendingCommit() {},
+  startSuspendingCommit() {
+    mark("reconciler/startSuspendingCommit");
+  },
 
   /**
    * #### `suspendInstance(type, props)`
@@ -658,7 +802,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * This method is called after `startSuspendingCommit` for each Host Component that indicated it might
    * suspend a commit.
    */
-  suspendInstance() {},
+  suspendInstance(type: Type, _props: Props) {
+    mark("reconciler/suspendInstance", { type });
+  },
 
   /**
    * #### `waitForCommitToBeReady()`
@@ -670,7 +816,9 @@ const hostConfig: ReactReconciler.HostConfig<
    * callback will initiate the commit when called. The return value is a cancellation function that the
    * Reconciler can use to abort the commit.
    */
-  waitForCommitToBeReady() {
+  waitForCommitToBeReady(type: Type, _props: Props) {
+    mark("reconciler/waitForCommitToBeReady", { type });
+
     return null;
   },
 
@@ -688,9 +836,13 @@ const hostConfig: ReactReconciler.HostConfig<
 
   NotPendingTransition: null,
 
-  resetFormInstance(_form: Instance) {},
+  resetFormInstance(_form: Instance) {
+    mark("reconciler/resetFormInstance");
+  },
 
-  requestPostPaintCallback(_callback: (endTime: number) => void) {},
+  requestPostPaintCallback(_callback: (endTime: number) => void) {
+    mark("reconciler/requestPostPaintCallback");
+  },
 };
 
 export const TestReconciler = ReactReconciler(hostConfig);
@@ -747,4 +899,8 @@ function removeChild(parentInstance: Container | Instance, child: Instance | Tex
   const index = parentInstance.children.indexOf(child);
   parentInstance.children.splice(index, 1);
   child.parent = null;
+}
+
+function formatInstanceType(instance: Instance | TextInstance): string {
+  return instance.tag === Tag.Text ? `text: "${instance.text}"` : instance.type;
 }

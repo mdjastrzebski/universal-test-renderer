@@ -2,11 +2,20 @@ import type { ReactElement } from "react";
 import { act as reactAct } from "react";
 
 import type { HostElement } from "../host-element";
+import { mark } from "../performance";
 import type { Root } from "../renderer";
 
 /** @internal */
 export async function act<T>(callback: () => T | Promise<T>): Promise<T> {
-  return await reactAct(async () => callback());
+  mark("act:start");
+  const result = await reactAct(async () => {
+    mark("act callback:start");
+    const result = await callback();
+    mark("act callback:end");
+    return result;
+  });
+  mark("act:end");
+  return result;
 }
 
 /** @internal */
@@ -31,4 +40,42 @@ export function getRootElement(renderer: Root): HostElement {
   }
 
   return firstChild;
+}
+
+/** @internal */
+export function formatPerfEntries(entries: PerformanceEntry[]): string {
+  const referenceTime = entries[0]?.startTime ?? 0;
+
+  let result = "";
+  for (const entry of entries) {
+    const relativeTime = entry.startTime - referenceTime;
+    if (entry.duration === 0) {
+      result += `${relativeTime.toFixed(2)}ms: ${entry.name}${getEntryData(entry)}\n`;
+    } else {
+      result += `${relativeTime.toFixed(2)}ms (${entry.duration.toFixed(2)}ms): ${entry.name}${getEntryData(entry)}\n`;
+    }
+  }
+
+  return result;
+}
+
+function getEntryData(entry: PerformanceEntry): string {
+  if (!(entry instanceof PerformanceMark) && !(entry instanceof PerformanceMeasure)) {
+    return "";
+  }
+
+  if (entry.detail == null) {
+    return "";
+  }
+
+  if (typeof entry.detail !== "object") {
+    return " " + JSON.stringify(entry.detail);
+  }
+
+  const entries = [];
+  for (const [key, value] of Object.entries(entry.detail as Record<string, unknown>)) {
+    entries.push(`${key}=${JSON.stringify(value)}`);
+  }
+
+  return ` (${entries.join(", ")})`;
 }
