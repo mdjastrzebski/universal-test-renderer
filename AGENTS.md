@@ -2,26 +2,26 @@
 
 ## Project Overview
 
-**Test Renderer for React** is a lightweight, pure JavaScript testing library for React 19. It serves as a modern replacement for the deprecated `react-test-renderer`. By leveraging `react-reconciler`, it provides a custom renderer that outputs to a lightweight, traversable object structure (`HostElement`), making it ideal for snapshot testing and asserting component output without requiring a browser environment (DOM) or native dependencies.
+**Test Renderer for React** is a lightweight, pure JavaScript testing library for React 19. It replaces the deprecated `react-test-renderer`. Built with `react-reconciler`, it outputs to a lightweight, traversable object structure (`HostElement`) for snapshot testing and asserting component output without a browser environment (DOM) or native dependencies.
 
 ### Key Features
 
-- **React 19 Ready:** Built to support modern React features, including concurrent rendering.
-- **Lightweight & Universal:** No DOM or native dependencies; runs in any JavaScript environment (Node.js, Bun, etc.).
+- **React 19 Ready:** Supports modern React features, including concurrent rendering.
+- **Lightweight & Universal:** No DOM or native dependencies. Runs in any JavaScript environment (Node.js, Bun, etc.).
 - **Type-Safe:** Written in strict TypeScript.
-- **Snapshot Friendly:** Produces clean JSON output for Jest/Vitest snapshots.
+- **Snapshot Friendly:** Produces JSON output for Jest/Vitest snapshots.
 
 ### Architecture
 
 - **`src/index.ts`**: The public entry point that exports `createRoot` from `renderer.ts`.
 - **`src/renderer.ts`**: Contains the main implementation. Exports `createRoot` which initializes the custom React reconciler.
 - **`src/reconciler.ts`**: Implements the `react-reconciler` host config, translating React updates into operations on the internal tree.
-- **`src/host-element.ts`**: Defines `HostElement`, a wrapper around the internal fiber nodes that provides a user-friendly, DOM-like API (e.g., `children`, `props`, `parent`).
+- **`src/host-element.ts`**: Defines `HostElement`, a wrapper around the internal fiber nodes with a DOM-like API (e.g., `children`, `props`, `parent`).
 - **`src/render-to-json.ts`**: Handles the serialization of `HostElement` trees into JSON format for snapshots.
 
 ## Building and Running
 
-The project uses **Bun** as the preferred runtime/package manager for development scripts, although it can be installed via npm.
+The project uses **Bun** for development scripts, but you can install it via npm.
 
 ### Prerequisites
 

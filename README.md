@@ -2,9 +2,9 @@
 
 A lightweight, JS-only building block for creating Testing Library-style libraries.
 
-This library is used by [React Native Testing Library](https://github.com/callstack/react-native-testing-library) but is written generically to support different React variants and custom renderers.
+This library is used by [React Native Testing Library](https://github.com/callstack/react-native-testing-library) but should work with any React variant.
 
-This library also serves as a replacement for the deprecated React Test Renderer. It is built using [React Reconciler](https://github.com/facebook/react/tree/main/packages/react-reconciler) to provide a custom renderer that operates on host elements by default, with proper escape hatches when needed. Most React Reconciler options are exposed for maximum flexibility.
+This library replaces the deprecated React Test Renderer. It uses [React Reconciler](https://github.com/facebook/react/tree/main/packages/react-reconciler) to build a custom renderer that operates on host elements by default, and provides escape hatches for complex use-cases. Most React Reconciler options are exposed through `RootOptions`.
 
 ## Installation
 
@@ -86,7 +86,7 @@ Configuration options for the test renderer. Many of these options correspond to
 
 ### `HostElement`
 
-A wrapper around rendered host elements that provides a DOM-like API for querying and inspecting the rendered tree.
+A wrapper around rendered host elements with a DOM-like API for querying and inspecting the rendered tree.
 
 **Properties:**
 
@@ -139,11 +139,11 @@ const includingSelf = container.queryAll((el) => el.type === "div", { includeSel
 
 ## Migration from React Test Renderer
 
-This library serves as a replacement for the deprecated React Test Renderer. The main differences are:
+This library replaces the deprecated React Test Renderer. The main differences:
 
-- **Host element focus**: This library operates on host components by default, while React Test Renderer worked with a mix of host and composite components. You can access the underlying fiber via `unstable_fiber` if needed.
-- **Built on React Reconciler**: This library is built using React Reconciler, providing a custom renderer implementation.
-- **Exposed reconciler options**: Most React Reconciler configuration options are exposed through `RootOptions` for maximum flexibility.
+- **Host element focus**: Operates on host components by default, while React Test Renderer worked with a mix of host and composite components. Access the underlying fiber via `unstable_fiber` if needed.
+- **Built on React Reconciler**: Uses React Reconciler to implement a custom renderer.
+- **Exposed reconciler options**: Most React Reconciler configuration options are available through `RootOptions`.
 
 For most use cases, the migration is straightforward:
 
